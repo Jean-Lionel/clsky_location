@@ -15,11 +15,11 @@
                 <a href="{{ route('home') }}" class="nav-item nav-link {{ Request::is('/') ? 'active' : '' }}">Home</a>
                 <a href="{{ route('about') }}" class="nav-item nav-link {{ Request::is('about') ? 'active' : '' }}">About</a>
                 <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Property</a>
+                    <a href="#" class="nav-link dropdown-toggle {{ Request::is('property.*') ? 'active' : '' }}" data-bs-toggle="dropdown">Property</a>
                     <div class="dropdown-menu rounded-0 m-0">
-                        <a href="{{ route('property.list') }}" class="dropdown-item {{ Request::is('property/list') ? 'active' : '' }}">Property List</a>
-                        <a href="{{ route('property.type') }}" class="dropdown-item {{ Request::is('property/type') ? 'active' : '' }}">Property Type</a>
-                        <a href="{{ route('property.agent') }}" class="dropdown-item {{ Request::is('property/agent') ? 'active' : '' }}">Property Agent</a>
+                        <a href="{{ route('property.list') }}" class="dropdown-item">Property List</a>
+                        <a href="{{ route('property.type') }}" class="dropdown-item">Property Type</a>
+                        <a href="{{ route('property.agent') }}" class="dropdown-item">Property Agent</a>
                     </div>
                 </div>
                 <div class="nav-item dropdown">

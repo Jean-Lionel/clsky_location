@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Makaan - Real Estate HTML Template</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link rel="shortcut icon" href="img/icon-deal.png" type="image/x-icon">
     <meta content="" name="keywords">
     <meta content="" name="description">
 
