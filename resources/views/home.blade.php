@@ -1,5 +1,5 @@
 
-@extends('layouts.app')
+@extends('layouts.base')
 
 @section('content')
 <!-- Content start -->
@@ -750,5 +750,3 @@
  <!-- Content End -->
 
  @endsection
-
-

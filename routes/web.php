@@ -34,3 +34,7 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/testimonial', 'testimonial')->name('testimonial');
     Route::get('/404', 'notFound')->name('404');
 });
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
