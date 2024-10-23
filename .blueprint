@@ -1,2 +1,50 @@
+created:
+    - database/factories/UserFactory.php
+    - database/factories/PropertyFactory.php
+    - database/factories/PropertyImageFactory.php
+    - database/factories/AmenityFactory.php
+    - database/factories/PropertyAmenityFactory.php
+    - database/factories/ReservationFactory.php
+    - database/factories/PaymentFactory.php
+    - database/factories/ReviewFactory.php
+    - database/factories/MessageFactory.php
+    - database/factories/NotificationFactory.php
+    - database/factories/MaintenanceFactory.php
+    - database/factories/DocumentFactory.php
+    - database/migrations/2024_10_23_150505_create_users_table.php
+    - database/migrations/2024_10_23_150506_create_properties_table.php
+    - database/migrations/2024_10_23_150507_create_property_images_table.php
+    - database/migrations/2024_10_23_150508_create_amenities_table.php
+    - database/migrations/2024_10_23_150509_create_property_amenities_table.php
+    - database/migrations/2024_10_23_150510_create_reservations_table.php
+    - database/migrations/2024_10_23_150511_create_payments_table.php
+    - database/migrations/2024_10_23_150512_create_reviews_table.php
+    - database/migrations/2024_10_23_150513_create_messages_table.php
+    - database/migrations/2024_10_23_150514_create_notifications_table.php
+    - database/migrations/2024_10_23_150515_create_maintenances_table.php
+    - database/migrations/2024_10_23_150516_create_documents_table.php
+    - app/Models/User.php
+    - app/Models/Property.php
+    - app/Models/PropertyImage.php
+    - app/Models/Amenity.php
+    - app/Models/PropertyAmenity.php
+    - app/Models/Reservation.php
+    - app/Models/Payment.php
+    - app/Models/Review.php
+    - app/Models/Message.php
+    - app/Models/Notification.php
+    - app/Models/Maintenance.php
+    - app/Models/Document.php
 models:
-    User: { name: string, email: string, email_verified_at: 'datetime nullable', password: string, remember_token: 'string nullable' }
+    User: { id: id, name: string, email: 'string unique', email_verified_at: 'timestamp nullable', password: string, phone: 'string nullable', address: 'text nullable', role: 'enum:admin,owner,tenant,agent', avatar: 'string nullable', status: 'enum:active,inactive default:active', remember_token: 'string nullable', softdeletes: softDeletes, timestamps: timestamps }
+    Property: { id: id, title: string, slug: 'string unique', description: text, address: text, city: string, country: string, postal_code: string, price: 'decimal:10,2', bedrooms: integer, bathrooms: integer, area: 'decimal:8,2', floor: 'integer nullable', furnished: 'boolean default:false', available: 'boolean default:true', type: 'enum:apartment,studio,duplex', status: 'enum:available,rented,maintenance default:available', featured: 'boolean default:false', user_id: 'id foreign:users', softdeletes: softDeletes, timestamps: timestamps }
+    PropertyImage: { id: id, property_id: 'id foreign', image_path: string, is_primary: 'boolean default:false', sort_order: 'integer default:0', timestamps: timestamps }
+    Amenity: { id: id, name: string, icon: string, timestamps: timestamps }
+    PropertyAmenity: { id: id, property_id: 'id foreign', amenity_id: 'id foreign', timestamps: timestamps }
+    Reservation: { id: id, property_id: 'id foreign', user_id: 'id foreign', check_in: date, check_out: date, total_price: 'decimal:10,2', guests: integer, status: 'enum:pending,confirmed,cancelled,completed default:pending', payment_status: 'enum:pending,paid,refunded default:pending', notes: 'text nullable', timestamps: timestamps }
+    Payment: { id: id, reservation_id: 'id foreign', user_id: 'id foreign', amount: 'decimal:10,2', payment_method: 'enum:card,bank_transfer,cash', transaction_id: 'string nullable', status: 'enum:pending,completed,failed,refunded default:pending', timestamps: timestamps }
+    Review: { id: id, property_id: 'id foreign', user_id: 'id foreign', reservation_id: 'id foreign nullable', rating: integer, comment: 'text nullable', status: 'enum:pending,approved,rejected default:pending', timestamps: timestamps }
+    Message: { id: id, sender_id: 'id foreign:users', receiver_id: 'id foreign:users', property_id: 'id foreign:properties nullable', subject: 'string nullable', content: text, read_at: 'timestamp nullable', timestamps: timestamps }
+    Notification: { id: id, user_id: 'id foreign', title: string, content: text, type: string, read_at: 'timestamp nullable', timestamps: timestamps }
+    Maintenance: { id: id, property_id: 'id foreign', reported_by: 'id foreign:users', title: string, description: text, priority: 'enum:low,medium,high,urgent', status: 'enum:pending,in_progress,completed,cancelled', completed_at: 'timestamp nullable', timestamps: timestamps }
+    Document: { id: id, property_id: 'id foreign', title: string, file_path: string, type: 'enum:contract,invoice,other', timestamps: timestamps }

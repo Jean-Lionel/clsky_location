@@ -1,5 +1,130 @@
 models:
-  # ...
+  User:
+    id: id
+    name: string
+    email: string unique
+    email_verified_at: timestamp nullable
+    password: string
+    phone: string nullable
+    address: text nullable
+    role: enum:admin,owner,tenant,agent
+    avatar: string nullable
+    status: enum:active,inactive default:active
+    remember_token: string nullable
+    softDeletes
+    timestamps
 
-controllers:
-  # ...
+  Property:
+    id: id
+    title: string
+    slug: string unique
+    description: text
+    address: text
+    city: string
+    country: string
+    postal_code: string
+    price: decimal:10,2
+    bedrooms: integer
+    bathrooms: integer
+    area: decimal:8,2
+    floor: integer nullable
+    furnished: boolean default:false
+    available: boolean default:true
+    type: enum:apartment,studio,duplex
+    status: enum:available,rented,maintenance default:available
+    featured: boolean default:false
+    user_id: id foreign:users
+    softDeletes
+    timestamps
+
+  PropertyImage:
+    id: id
+    property_id: id foreign
+    image_path: string
+    is_primary: boolean default:false
+    sort_order: integer default:0
+    timestamps
+
+  Amenity:
+    id: id
+    name: string
+    icon: string
+    timestamps
+
+  PropertyAmenity:
+    id: id
+    property_id: id foreign
+    amenity_id: id foreign
+    timestamps
+
+  Reservation:
+    id: id
+    property_id: id foreign
+    user_id: id foreign
+    check_in: date
+    check_out: date
+    total_price: decimal:10,2
+    guests: integer
+    status: enum:pending,confirmed,cancelled,completed default:pending
+    payment_status: enum:pending,paid,refunded default:pending
+    notes: text nullable
+    timestamps
+
+  Payment:
+    id: id
+    reservation_id: id foreign
+    user_id: id foreign
+    amount: decimal:10,2
+    payment_method: enum:card,bank_transfer,cash
+    transaction_id: string nullable
+    status: enum:pending,completed,failed,refunded default:pending
+    timestamps
+
+  Review:
+    id: id
+    property_id: id foreign
+    user_id: id foreign
+    reservation_id: id foreign nullable
+    rating: integer
+    comment: text nullable
+    status: enum:pending,approved,rejected default:pending
+    timestamps
+
+  Message:
+    id: id
+    sender_id: id foreign:users
+    receiver_id: id foreign:users
+    property_id: id foreign:properties nullable
+    subject: string nullable
+    content: text
+    read_at: timestamp nullable
+    timestamps
+
+  Notification:
+    id: id
+    user_id: id foreign
+    title: string
+    content: text
+    type: string
+    read_at: timestamp nullable
+    timestamps
+
+  Maintenance:
+    id: id
+    property_id: id foreign
+    reported_by: id foreign:users
+    title: string
+    description: text
+    priority: enum:low,medium,high,urgent
+    status: enum:pending,in_progress,completed,cancelled
+    completed_at: timestamp nullable
+    timestamps
+
+  Document:
+    id: id
+    property_id: id foreign
+    title: string
+    file_path: string
+    type: enum:contract,invoice,other
+    timestamps
+
