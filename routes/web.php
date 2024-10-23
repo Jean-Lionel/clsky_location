@@ -1,33 +1,29 @@
 <?php
 
+use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('home');
-});
-Route::get('/home', function () {
-    return view('home');
-});
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
 
-Route::get('/about', function () {
-    return view('about');
-});
-Route::get('/property-list', function () {
-    return view('property-list');
-});
-Route::get('/property-type', function () {
-    return view('property-type');
-});
-Route::get('/property-agent', function () {
-    return view('property-agent');
-});
-Route::get('/contact', function () {
-    return view('contact');
-});
-Route::get('/testimonial', function () {
-    return view('testimonial');
-});
-Route::get('/404', function () {
-    return view('404');
-});
+// Page routes
+Route::controller(PageController::class)->group(function () {
+    Route::get('/', 'home')->name('home');
+    Route::get('/home', 'home')->name('home.index');
 
+    Route::get('/about', 'about')->name('about');
+
+    // Property related routes
+    Route::prefix('property')->name('property.')->group(function () {
+        Route::get('/list', 'propertyList')->name('list');
+        Route::get('/type', 'propertyType')->name('type');
+        Route::get('/agent', 'propertyAgent')->name('agent');
+    });
+
+    Route::get('/contact', 'contact')->name('contact');
+    Route::get('/testimonial', 'testimonial')->name('testimonial');
+    Route::get('/404', 'notFound')->name('404');
+});
