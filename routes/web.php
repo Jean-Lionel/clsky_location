@@ -17,11 +17,18 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/about', 'about')->name('about');
 
     // Property related routes
-    Route::prefix('property')->name('property.')->group(function () {
-        Route::get('/list', 'propertyList')->name('list');
-        Route::get('/type', 'propertyType')->name('type');
-        Route::get('/agent', 'propertyAgent')->name('agent');
-    });
+    // Route::prefix('property')->group(function () {
+    //     Route::get('/list', 'propertyList')->name('property.list');
+    //     Route::get('/type', 'propertyType')->name('property.type');
+    //     Route::get('/agent', 'propertyAgent')->name('property.agent');
+    // });
+
+    Route::get('list', 'propertyList')->name('property.list');
+    Route::get('type', 'propertyType')->name('property.type');
+    Route::get('agent', 'propertyAgent')->name('property.agent');
+
+
+    // Contact related routes
 
     Route::get('/contact', 'contact')->name('contact');
     Route::get('/testimonial', 'testimonial')->name('testimonial');

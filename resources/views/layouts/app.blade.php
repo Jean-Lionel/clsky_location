@@ -28,6 +28,7 @@
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+    @stack('styles')
 </head>
 
 <body>

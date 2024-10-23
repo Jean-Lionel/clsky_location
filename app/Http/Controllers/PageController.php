@@ -24,7 +24,7 @@ class PageController extends Controller
      * Display the property list page.
      */
     public function propertyList(){
-        return view('property-list');
+        return view('pages.property-list');
     }
 
     /**
@@ -32,7 +32,7 @@ class PageController extends Controller
      */
     public function propertyType()
     {
-        return view('property-type');
+        return view('pages.property-type');
     }
 
     /**
@@ -40,7 +40,7 @@ class PageController extends Controller
      */
     public function propertyAgent()
     {
-        return view('property-agent');
+        return view('pages.property-agent');
     }
 
     /**
@@ -48,7 +48,7 @@ class PageController extends Controller
      */
     public function contact()
     {
-        return view('contact');
+        return view('pages.contact');
     }
 
     /**
@@ -56,7 +56,7 @@ class PageController extends Controller
      */
     public function testimonial()
     {
-        return view('testimonial');
+        return view('pages.testimonial');
     }
 
     /**
@@ -64,6 +64,6 @@ class PageController extends Controller
      */
     public function notFound()
     {
-        return view('404');
+        return view('pages.404');
     }
 }
