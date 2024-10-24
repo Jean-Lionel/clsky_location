@@ -128,3 +128,39 @@ models:
     type: enum:contract,invoice,other
     timestamps
 
+controllers:
+  UserController:
+    resource: web
+
+  PropertyController:
+    resource: web
+
+  PropertyImageController:
+    resource: web
+
+  AmenityController:
+    resource: web
+
+  PropertyAmenityController:
+    resource: web
+
+  ReservationController:
+    resource: web
+
+  PaymentController:
+    resource: web
+
+  ReviewController:
+    resource: web
+
+  MessageController:
+    resource: web
+
+  NotificationController:
+    resource: web
+
+  MaintenanceController:
+    resource: web
+
+  DocumentController:
+    resource: web

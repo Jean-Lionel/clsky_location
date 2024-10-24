@@ -1,4 +1,16 @@
 created:
+    - app/Http/Controllers/UserController.php
+    - app/Http/Controllers/PropertyController.php
+    - app/Http/Controllers/PropertyImageController.php
+    - app/Http/Controllers/AmenityController.php
+    - app/Http/Controllers/PropertyAmenityController.php
+    - app/Http/Controllers/ReservationController.php
+    - app/Http/Controllers/PaymentController.php
+    - app/Http/Controllers/ReviewController.php
+    - app/Http/Controllers/MessageController.php
+    - app/Http/Controllers/NotificationController.php
+    - app/Http/Controllers/MaintenanceController.php
+    - app/Http/Controllers/DocumentController.php
     - database/factories/UserFactory.php
     - database/factories/PropertyFactory.php
     - database/factories/PropertyImageFactory.php
@@ -11,18 +23,18 @@ created:
     - database/factories/NotificationFactory.php
     - database/factories/MaintenanceFactory.php
     - database/factories/DocumentFactory.php
-    - database/migrations/2024_10_23_150505_create_users_table.php
-    - database/migrations/2024_10_23_150506_create_properties_table.php
-    - database/migrations/2024_10_23_150507_create_property_images_table.php
-    - database/migrations/2024_10_23_150508_create_amenities_table.php
-    - database/migrations/2024_10_23_150509_create_property_amenities_table.php
-    - database/migrations/2024_10_23_150510_create_reservations_table.php
-    - database/migrations/2024_10_23_150511_create_payments_table.php
-    - database/migrations/2024_10_23_150512_create_reviews_table.php
-    - database/migrations/2024_10_23_150513_create_messages_table.php
-    - database/migrations/2024_10_23_150514_create_notifications_table.php
-    - database/migrations/2024_10_23_150515_create_maintenances_table.php
-    - database/migrations/2024_10_23_150516_create_documents_table.php
+    - database/migrations/2024_10_24_092650_create_users_table.php
+    - database/migrations/2024_10_24_092651_create_properties_table.php
+    - database/migrations/2024_10_24_092652_create_property_images_table.php
+    - database/migrations/2024_10_24_092653_create_amenities_table.php
+    - database/migrations/2024_10_24_092654_create_property_amenities_table.php
+    - database/migrations/2024_10_24_092655_create_reservations_table.php
+    - database/migrations/2024_10_24_092656_create_payments_table.php
+    - database/migrations/2024_10_24_092657_create_reviews_table.php
+    - database/migrations/2024_10_24_092658_create_messages_table.php
+    - database/migrations/2024_10_24_092659_create_notifications_table.php
+    - database/migrations/2024_10_24_092700_create_maintenances_table.php
+    - database/migrations/2024_10_24_092701_create_documents_table.php
     - app/Models/User.php
     - app/Models/Property.php
     - app/Models/PropertyImage.php
@@ -35,6 +47,92 @@ created:
     - app/Models/Notification.php
     - app/Models/Maintenance.php
     - app/Models/Document.php
+    - tests/Feature/Http/Controllers/UserControllerTest.php
+    - tests/Feature/Http/Controllers/PropertyControllerTest.php
+    - tests/Feature/Http/Controllers/PropertyImageControllerTest.php
+    - tests/Feature/Http/Controllers/AmenityControllerTest.php
+    - tests/Feature/Http/Controllers/PropertyAmenityControllerTest.php
+    - tests/Feature/Http/Controllers/ReservationControllerTest.php
+    - tests/Feature/Http/Controllers/PaymentControllerTest.php
+    - tests/Feature/Http/Controllers/ReviewControllerTest.php
+    - tests/Feature/Http/Controllers/MessageControllerTest.php
+    - tests/Feature/Http/Controllers/NotificationControllerTest.php
+    - tests/Feature/Http/Controllers/MaintenanceControllerTest.php
+    - tests/Feature/Http/Controllers/DocumentControllerTest.php
+    - app/Http/Requests/UserStoreRequest.php
+    - app/Http/Requests/UserUpdateRequest.php
+    - app/Http/Requests/PropertyStoreRequest.php
+    - app/Http/Requests/PropertyUpdateRequest.php
+    - app/Http/Requests/PropertyImageStoreRequest.php
+    - app/Http/Requests/PropertyImageUpdateRequest.php
+    - app/Http/Requests/AmenityStoreRequest.php
+    - app/Http/Requests/AmenityUpdateRequest.php
+    - app/Http/Requests/PropertyAmenityStoreRequest.php
+    - app/Http/Requests/PropertyAmenityUpdateRequest.php
+    - app/Http/Requests/ReservationStoreRequest.php
+    - app/Http/Requests/ReservationUpdateRequest.php
+    - app/Http/Requests/PaymentStoreRequest.php
+    - app/Http/Requests/PaymentUpdateRequest.php
+    - app/Http/Requests/ReviewStoreRequest.php
+    - app/Http/Requests/ReviewUpdateRequest.php
+    - app/Http/Requests/MessageStoreRequest.php
+    - app/Http/Requests/MessageUpdateRequest.php
+    - app/Http/Requests/NotificationStoreRequest.php
+    - app/Http/Requests/NotificationUpdateRequest.php
+    - app/Http/Requests/MaintenanceStoreRequest.php
+    - app/Http/Requests/MaintenanceUpdateRequest.php
+    - app/Http/Requests/DocumentStoreRequest.php
+    - app/Http/Requests/DocumentUpdateRequest.php
+    - resources/views/user/index.blade.php
+    - resources/views/user/create.blade.php
+    - resources/views/user/show.blade.php
+    - resources/views/user/edit.blade.php
+    - resources/views/property/index.blade.php
+    - resources/views/property/create.blade.php
+    - resources/views/property/show.blade.php
+    - resources/views/property/edit.blade.php
+    - resources/views/propertyImage/index.blade.php
+    - resources/views/propertyImage/create.blade.php
+    - resources/views/propertyImage/show.blade.php
+    - resources/views/propertyImage/edit.blade.php
+    - resources/views/amenity/index.blade.php
+    - resources/views/amenity/create.blade.php
+    - resources/views/amenity/show.blade.php
+    - resources/views/amenity/edit.blade.php
+    - resources/views/propertyAmenity/index.blade.php
+    - resources/views/propertyAmenity/create.blade.php
+    - resources/views/propertyAmenity/show.blade.php
+    - resources/views/propertyAmenity/edit.blade.php
+    - resources/views/reservation/index.blade.php
+    - resources/views/reservation/create.blade.php
+    - resources/views/reservation/show.blade.php
+    - resources/views/reservation/edit.blade.php
+    - resources/views/payment/index.blade.php
+    - resources/views/payment/create.blade.php
+    - resources/views/payment/show.blade.php
+    - resources/views/payment/edit.blade.php
+    - resources/views/review/index.blade.php
+    - resources/views/review/create.blade.php
+    - resources/views/review/show.blade.php
+    - resources/views/review/edit.blade.php
+    - resources/views/message/index.blade.php
+    - resources/views/message/create.blade.php
+    - resources/views/message/show.blade.php
+    - resources/views/message/edit.blade.php
+    - resources/views/notification/index.blade.php
+    - resources/views/notification/create.blade.php
+    - resources/views/notification/show.blade.php
+    - resources/views/notification/edit.blade.php
+    - resources/views/maintenance/index.blade.php
+    - resources/views/maintenance/create.blade.php
+    - resources/views/maintenance/show.blade.php
+    - resources/views/maintenance/edit.blade.php
+    - resources/views/document/index.blade.php
+    - resources/views/document/create.blade.php
+    - resources/views/document/show.blade.php
+    - resources/views/document/edit.blade.php
+updated:
+    - routes/web.php
 models:
     User: { id: id, name: string, email: 'string unique', email_verified_at: 'timestamp nullable', password: string, phone: 'string nullable', address: 'text nullable', role: 'enum:admin,owner,tenant,agent', avatar: 'string nullable', status: 'enum:active,inactive default:active', remember_token: 'string nullable', softdeletes: softDeletes, timestamps: timestamps }
     Property: { id: id, title: string, slug: 'string unique', description: text, address: text, city: string, country: string, postal_code: string, price: 'decimal:10,2', bedrooms: integer, bathrooms: integer, area: 'decimal:8,2', floor: 'integer nullable', furnished: 'boolean default:false', available: 'boolean default:true', type: 'enum:apartment,studio,duplex', status: 'enum:available,rented,maintenance default:available', featured: 'boolean default:false', user_id: 'id foreign:users', softdeletes: softDeletes, timestamps: timestamps }

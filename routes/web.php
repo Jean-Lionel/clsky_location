@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PageController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 // Page routes
 Route::controller(PageController::class)->group(function () {
     Route::get('/', 'home')->name('home');
+ 
     Route::get('/home', 'home')->name('home.index');
 
     Route::get('/about', 'about')->name('about');
@@ -25,20 +27,20 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/404', 'notFound')->name('404');
 });
 
-
-Route::middleware(['auth'])->group(function () {
-    // Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    // Route::resource('properties', PropertyController::class);
-    // Route::resource('users', UserController::class);
-    // Route::resource('reservations', ReservationController::class);
-    // Route::resource('messages', MessageController::class);
-    // Route::resource('payments', PaymentController::class);
-    // Route::resource('reports', ReportController::class);
-    // Route::resource('settings', SettingController::class);
-    // Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
-    // Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-});
-
 Auth::routes();
+Route::middleware(['auth'])->group(function () {
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+        Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+        Route::resource('users', App\Http\Controllers\UserController::class);
+        Route::resource('properties', App\Http\Controllers\PropertyController::class);
+        Route::resource('property-images', App\Http\Controllers\PropertyImageController::class);
+        Route::resource('amenities', App\Http\Controllers\AmenityController::class);
+        Route::resource('property-amenities', App\Http\Controllers\PropertyAmenityController::class);
+        Route::resource('reservations', App\Http\Controllers\ReservationController::class);
+        Route::resource('payments', App\Http\Controllers\PaymentController::class);
+        Route::resource('reviews', App\Http\Controllers\ReviewController::class);
+        Route::resource('messages', App\Http\Controllers\MessageController::class);
+        Route::resource('notifications', App\Http\Controllers\NotificationController::class);
+        Route::resource('maintenances', App\Http\Controllers\MaintenanceController::class);
+        Route::resource('documents', App\Http\Controllers\DocumentController::class);
+});
