@@ -29,7 +29,7 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/404', 'notFound')->name('404');
 });
 
-Route::middleware(['auth',  'admin'])->group(function () {
+Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
         Route::resource('users', App\Http\Controllers\UserController::class);
