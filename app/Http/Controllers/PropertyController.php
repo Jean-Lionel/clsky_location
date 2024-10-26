@@ -6,6 +6,7 @@ use App\Models\Property;
 use App\Models\PropertyImage;
 use App\Http\Requests\PropertyStoreRequest;
 use App\Http\Requests\PropertyUpdateRequest;
+use App\Services\ImageService;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
@@ -17,11 +18,12 @@ class PropertyController extends Controller
         'medium' => [400, 300],
         'large' => [800, 600]
     ];
+    protected $imageService;
 
-    public function __construct()
+    public function __construct(ImageService $imageService)
     {
+        $this->imageService = $imageService;
         $this->middleware('auth');
-        //$this->authorizeResource(Property::class, 'property');
     }
 
     public function index()
@@ -69,33 +71,55 @@ class PropertyController extends Controller
     }
 
     public function store(PropertyStoreRequest $request)
-    {
-        try {
-            \DB::beginTransaction();
+{
+    try {
+        \DB::beginTransaction();
 
-            $property = Property::create($request->validated());
+        // Préparer les données avec le slug
+        $data = $request->validated();
+        $data['slug'] = $this->generateUniqueSlug($data['title']);
+        $data['user_id'] = auth()->id();
 
-            if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $image) {
+        // Créer la propriété
+        $property = Property::create($data);
+
+        // Gérer les images
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                if (!$this->imageService->isValidImage($image)) {
+                    continue; // Passer à l'image suivante si invalide
+                }
+
+                try {
                     $imagePath = $this->imageService->handlePropertyImage($image, $property->id);
                     $property->images()->create([
                         'image_path' => $imagePath,
                         'is_primary' => $property->images()->count() === 0
                     ]);
+                } catch (\Exception $e) {
+                    logger()->error('Erreur lors du traitement de l\'image:', [
+                        'error' => $e->getMessage()
+                    ]);
+                    // Continuer avec les autres images même si une échoue
                 }
             }
-
-            \DB::commit();
-            return redirect()->route('properties.index')
-                ->with('success', 'Propriété créée avec succès');
-
-        } catch (\Exception $e) {
-            \DB::rollBack();
-            return back()->with('error', 'Une erreur est survenue lors de la création.')
-                        ->withInput();
         }
-    }
 
+        \DB::commit();
+        return redirect()->route('properties.index')
+            ->with('success', 'Propriété créée avec succès');
+
+    } catch (\Exception $e) {
+        \DB::rollBack();
+        logger()->error('Erreur création propriété:', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        return back()
+            ->with('error', 'Une erreur est survenue lors de la création.')
+            ->withInput();
+    }
+}
     public function show(Property $property)
     {
         $property->load(['images', 'user', 'reservations.user']);
@@ -253,13 +277,16 @@ class PropertyController extends Controller
         $image->delete();
     }
 
+   
     protected function generateUniqueSlug($title)
     {
         $slug = Str::slug($title);
         $count = 1;
 
+        // Vérifier si le slug existe déjà
         while (Property::where('slug', $slug)->exists()) {
-            $slug = Str::slug($title) . '-' . $count++;
+            $slug = Str::slug($title) . '-' . $count;
+            $count++;
         }
 
         return $slug;

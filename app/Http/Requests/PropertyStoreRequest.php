@@ -24,6 +24,7 @@ class PropertyStoreRequest extends FormRequest
             'bedrooms' => ['required', 'integer', 'min:0'],
             'bathrooms' => ['required', 'integer', 'min:0'],
             'area' => ['required', 'numeric', 'min:0'],
+            
             'floor' => ['nullable', 'integer', 'min:0'],
             'type' => ['required', 'string', 'in:apartment,studio,duplex'],
             'status' => ['required', 'string', 'in:available,rented,maintenance'],
