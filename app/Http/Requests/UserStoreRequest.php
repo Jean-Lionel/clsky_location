@@ -3,33 +3,43 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class UserStoreRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     */
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string'],
-            'email' => ['required', 'email', 'unique:users,email'],
-            'email_verified_at' => ['nullable'],
-            'password' => ['required', 'password'],
-            'phone' => ['nullable', 'string'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'confirmed', Password::defaults()],
+            'role' => ['required', 'string', 'in:admin,agent,client'],
+            'phone' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string'],
-            'role' => ['required', 'in:admin,owner,tenant,agent'],
-            'avatar' => ['nullable', 'string'],
-            'status' => ['required', 'in:active,inactive'],
-            'remember_token' => ['nullable', 'string'],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'status' => ['nullable', 'string', 'in:active,inactive'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Le nom est requis',
+            'email.required' => 'L\'email est requis',
+            'email.email' => 'L\'email doit être une adresse valide',
+            'email.unique' => 'Cet email est déjà utilisé',
+            'password.required' => 'Le mot de passe est requis',
+            'password.confirmed' => 'La confirmation du mot de passe ne correspond pas',
+            'role.required' => 'Le rôle est requis',
+            'role.in' => 'Le rôle sélectionné n\'est pas valide',
+            'avatar.image' => 'Le fichier doit être une image',
+            'avatar.mimes' => 'L\'image doit être de type : jpeg, png, jpg, gif',
+            'avatar.max' => 'L\'image ne doit pas dépasser 2Mo',
         ];
     }
 }

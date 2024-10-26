@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserControllerStoreRequest;
 use App\Http\Requests\UserControllerUpdateRequest;
+use App\Http\Requests\UserStoreRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,7 +24,7 @@ class UserController extends Controller
         return view('user.create');
     }
 
-    public function store( $request)
+    public function store(UserStoreRequest $request)
     {
         $user = User::create($request->validated());
 
