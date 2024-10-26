@@ -71,10 +71,13 @@
                                 <div class="carousel-inner">
                                     @forelse($property->images as $key => $image)
                                         <div class="carousel-item {{ $key === 0 ? 'active' : '' }}">
+                                            <a class="d-block h5 mb-2 text-truncate" href="{{ route('properties.show', $property->id) }}">
+
                                             <img src="{{ Storage::url($image->image_path) }}"
                                                  class="d-block w-100"
                                                  alt="Property Image {{ $key + 1 }}"
                                                  style="height: 300px; object-fit: cover;">
+                                            </a>
                                         </div>
                                     @empty
                                         <div class="carousel-item active">
@@ -102,7 +105,10 @@
 
                             <!-- Property Type Badge -->
                             <div class="bg-white rounded-top text-primary position-absolute start-0 bottom-0 mx-4 pt-1 px-3">
+                                <a class="d-block h5 mb-2 text-truncate" href="{{ route('properties.show', $property->id) }}">
+
                                 {{ ucfirst($property->type) }}
+                                </a>
                             </div>
                         </div>
 
