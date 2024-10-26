@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('maintenances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('property_id')->constrained();
-            $table->foreignId('reported_by')->constrained('users', 'by');
+            $table->foreignId('reported_by')->nullable()->constrained('users');
             $table->string('title');
             $table->text('description');
             $table->enum('priority', ["low","medium","high","urgent"]);
