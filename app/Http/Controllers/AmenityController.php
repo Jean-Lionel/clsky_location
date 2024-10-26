@@ -1,57 +1,52 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Http\Requests\AmenityControllerStoreRequest;
-use App\Http\Requests\AmenityControllerUpdateRequest;
+use App\Http\Requests\AmenityStoreRequest;
+use App\Http\Requests\AmenityUpdateRequest;
 use App\Models\Amenity;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 
 class AmenityController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request)
     {
         $amenities = Amenity::all();
 
         return view('amenity.index', compact('amenities'));
     }
 
-    public function create(Request $request): Response
+    public function create(Request $request)
     {
         return view('amenity.create');
     }
 
-    public function store(AmenityControllerStoreRequest $request): Response
+    public function store(AmenityStoreRequest $request)
     {
         $amenity = Amenity::create($request->validated());
 
-        $request->session()->flash('amenity.id', $amenity->id);
 
         return redirect()->route('amenities.index');
     }
 
-    public function show(Request $request, Amenity $amenity): Response
+    public function show(Request $request, Amenity $amenity)
     {
         return view('amenity.show', compact('amenity'));
     }
 
-    public function edit(Request $request, Amenity $amenity): Response
+    public function edit(Request $request, Amenity $amenity)
     {
         return view('amenity.edit', compact('amenity'));
     }
 
-    public function update(AmenityControllerUpdateRequest $request, Amenity $amenity): Response
+    public function update(AmenityUpdateRequest $request, Amenity $amenity)
     {
         $amenity->update($request->validated());
 
-        $request->session()->flash('amenity.id', $amenity->id);
 
         return redirect()->route('amenities.index');
     }
 
-    public function destroy(Request $request, Amenity $amenity): Response
+    public function destroy(Request $request, Amenity $amenity)
     {
         $amenity->delete();
 
