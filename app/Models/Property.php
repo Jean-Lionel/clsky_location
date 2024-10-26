@@ -56,4 +56,7 @@ class Property extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function reservations(){
+        return $this->belongsTo(Reservation::class);
+    }
 }
