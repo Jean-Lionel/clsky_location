@@ -277,6 +277,32 @@ class PropertyController extends Controller
         $image->delete();
     }
 
+    public function updateImageOrder(Request $request, Property $property)
+{
+    $request->validate([
+        'imageIds' => 'required|array',
+        'imageIds.*' => 'required|exists:property_images,id'
+    ]);
+
+    try {
+        foreach ($request->imageIds as $index => $imageId) {
+            PropertyImage::where('id', $imageId)
+                ->where('property_id', $property->id)
+                ->update(['sort_order' => $index]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ordre des images mis à jour'
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur lors de la mise à jour de l\'ordre des images'
+        ], 500);
+    }
+}
+
    
     protected function generateUniqueSlug($title)
     {
@@ -291,4 +317,37 @@ class PropertyController extends Controller
 
         return $slug;
     }
+
+    public function uploadImages(Request $request, Property $property)
+    {
+        $request->validate([
+            'images.*' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+        ]);
+
+        try {
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $image) {
+                    $imagePath = $this->imageService->handlePropertyImage($image, $property->id);
+                    $property->images()->create([
+                        'image_path' => $imagePath,
+                        'is_primary' => $property->images()->count() === 0
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Images téléchargées avec succès'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors du téléchargement des images'
+            ], 500);
+        }
+    }
+
+    
+
+   
 }

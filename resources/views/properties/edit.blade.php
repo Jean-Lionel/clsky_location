@@ -1,3 +1,4 @@
+@extends('layouts.admin')
 {{-- Dans resources/views/properties/edit.blade.php --}}
 @push('styles')
 <style>
@@ -80,6 +81,43 @@
 @push('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
 <script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Configuration Sortable.js pour le drag & drop
+    const imageList = document.getElementById('imageList');
+    if (imageList) {
+        new Sortable(imageList, {
+            animation: 150,
+            ghostClass: 'bg-light',
+            onEnd: function(evt) {
+                const imageIds = [...evt.to.children].map(el => el.dataset.id);
+                updateImageOrder(imageIds);
+            }
+        });
+    }
+
+    // Fonction pour mettre à jour l'ordre des images
+    function updateImageOrder(imageIds) {
+        fetch('{{ route('properties.update-image-order', $property) }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ imageIds })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                alert('Erreur lors de la mise à jour de l\'ordre des images');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Une erreur est survenue');
+        });
+    }
 new Sortable(document.getElementById('imageList'), {
     animation: 150,
     ghostClass: 'sortable-ghost',
@@ -175,3 +213,4 @@ function updateImageOrder(imageIds) {
 }
 </script>
 @endpush
+
