@@ -59,4 +59,26 @@ class Property extends Model
     public function reservations(){
         return $this->belongsTo(Reservation::class);
     }
+    public function images()
+    {
+        return $this->hasMany(PropertyImage::class);
+    }
+
+    public function getStatusColorAttribute()
+    {
+        return [
+            'available' => 'success',
+            'rented' => 'warning',
+            'maintenance' => 'danger'
+        ][$this->status] ?? 'secondary';
+    }
+
+    public function getTypeTextAttribute()
+    {
+        return [
+            'apartment' => 'Appartement',
+            'studio' => 'Studio',
+            'duplex' => 'Duplex'
+        ][$this->type] ?? $this->type;
+    }
 }

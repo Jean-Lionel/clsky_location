@@ -64,7 +64,8 @@ class PropertyController extends Controller
 
     public function create()
     {
-        return view('properties.create');
+        $property = new Property();
+    return view('properties.create', compact('property'));
     }
 
     public function store(PropertyStoreRequest $request)
