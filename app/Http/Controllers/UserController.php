@@ -11,19 +11,19 @@ use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request)
     {
-        $users = User::all();
+        $users = User::latest()->paginate();
 
         return view('user.index', compact('users'));
     }
 
-    public function create(Request $request): Response
+    public function create(Request $request)
     {
         return view('user.create');
     }
 
-    public function store(UserControllerStoreRequest $request): Response
+    public function store( $request)
     {
         $user = User::create($request->validated());
 
@@ -32,17 +32,17 @@ class UserController extends Controller
         return redirect()->route('users.index');
     }
 
-    public function show(Request $request, User $user): Response
+    public function show(Request $request, User $user)
     {
         return view('user.show', compact('user'));
     }
 
-    public function edit(Request $request, User $user): Response
+    public function edit(Request $request, User $user)
     {
         return view('user.edit', compact('user'));
     }
 
-    public function update(UserControllerUpdateRequest $request, User $user): Response
+    public function update( $request, User $user)
     {
         $user->update($request->validated());
 
@@ -51,7 +51,7 @@ class UserController extends Controller
         return redirect()->route('users.index');
     }
 
-    public function destroy(Request $request, User $user): Response
+    public function destroy(Request $request, User $user)
     {
         $user->delete();
 
