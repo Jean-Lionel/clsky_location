@@ -2,56 +2,51 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\NotificationControllerStoreRequest;
-use App\Http\Requests\NotificationControllerUpdateRequest;
+use App\Http\Requests\NotificationStoreRequest;
+use App\Http\Requests\NotificationUpdateRequest;
 use App\Models\Notification;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
-
 class NotificationController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request)
     {
         $notifications = Notification::all();
 
         return view('notification.index', compact('notifications'));
     }
 
-    public function create(Request $request): Response
+    public function create(Request $request)
     {
         return view('notification.create');
     }
 
-    public function store(NotificationControllerStoreRequest $request): Response
+    public function store(NotificationStoreRequest $request)
     {
         $notification = Notification::create($request->validated());
 
-        $request->session()->flash('notification.id', $notification->id);
 
         return redirect()->route('notifications.index');
     }
 
-    public function show(Request $request, Notification $notification): Response
+    public function show(Request $request, Notification $notification)
     {
         return view('notification.show', compact('notification'));
     }
 
-    public function edit(Request $request, Notification $notification): Response
+    public function edit(Request $request, Notification $notification)
     {
         return view('notification.edit', compact('notification'));
     }
 
-    public function update(NotificationControllerUpdateRequest $request, Notification $notification): Response
+    public function update(NotificationUpdateRequest $request, Notification $notification)
     {
         $notification->update($request->validated());
 
-        $request->session()->flash('notification.id', $notification->id);
 
         return redirect()->route('notifications.index');
     }
 
-    public function destroy(Request $request, Notification $notification): Response
+    public function destroy(Request $request, Notification $notification)
     {
         $notification->delete();
 
