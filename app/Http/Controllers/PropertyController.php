@@ -73,31 +73,25 @@ class PropertyController extends Controller
         try {
             \DB::beginTransaction();
 
-            // Création de la propriété
-            $data = $request->validated();
-            $data['slug'] = $this->generateUniqueSlug($data['title']);
-            $data['user_id'] = auth()->id();
-            
-            $property = Property::create($data);
+            $property = Property::create($request->validated());
 
-            // Gestion des images
             if ($request->hasFile('images')) {
-                $this->handleImageUpload($property, $request->file('images'));
+                foreach ($request->file('images') as $image) {
+                    $imagePath = $this->imageService->handlePropertyImage($image, $property->id);
+                    $property->images()->create([
+                        'image_path' => $imagePath,
+                        'is_primary' => $property->images()->count() === 0
+                    ]);
+                }
             }
 
             \DB::commit();
-
             return redirect()->route('properties.index')
-                ->with('success', 'Propriété créée avec succès.');
+                ->with('success', 'Propriété créée avec succès');
 
         } catch (\Exception $e) {
             \DB::rollBack();
-            logger()->error('Erreur lors de la création de la propriété:', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            return back()->with('error', 'Une erreur est survenue lors de la création de la propriété.')
+            return back()->with('error', 'Une erreur est survenue lors de la création.')
                         ->withInput();
         }
     }
