@@ -18,13 +18,13 @@ use Illuminate\Support\Facades\Route;
 // Page routes
 Route::controller(PageController::class)->group(function () {
     Route::get('/', 'home')->name('home');
-    
+
     Route::get('/about', 'about')->name('about');
-    
+
     Route::get('list', 'propertyList')->name('property.list');
     Route::get('type', 'propertyType')->name('property.type');
     Route::get('agent', 'propertyAgent')->name('property.agent');
-    
+
     Route::get('/contact', 'contact')->name('contact');
     Route::get('/testimonial', 'testimonial')->name('testimonial');
     Route::get('/404', 'notFound')->name('404');
@@ -48,7 +48,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('reports', ReportController::class);
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
-    
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

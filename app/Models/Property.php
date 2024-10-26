@@ -36,6 +36,8 @@ class Property extends Model
         'price' => 'decimal:2'
     ];
 
+    protected $with = ['images'];
+
     // Relations
     public function user()
     {

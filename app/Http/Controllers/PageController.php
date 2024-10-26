@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Property;
+
 class PageController extends Controller
 {
     /**
@@ -9,7 +11,48 @@ class PageController extends Controller
      */
     public function home()
     {
-        return view('welcome');
+        $properties = Property::query()
+            ->with(['images', 'user'])
+            ->withCount('reservations')
+            ->when(request('search'), function($query, $search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%")
+                      ->orWhere('address', 'like', "%{$search}%")
+                      ->orWhere('city', 'like', "%{$search}%");
+                });
+            })
+            ->when(request('type'), function($query, $type) {
+                $query->where('type', $type);
+            })
+            ->when(request('status'), function($query, $status) {
+                $query->where('status', $status);
+            })
+            ->when(request('min_price'), function($query, $price) {
+                $query->where('price', '>=', $price);
+            })
+            ->when(request('max_price'), function($query, $price) {
+                $query->where('price', '<=', $price);
+            })
+            ->when(request('bedrooms'), function($query, $bedrooms) {
+                $query->where('bedrooms', '>=', $bedrooms);
+            })
+            ->when(request('bathrooms'), function($query, $bathrooms) {
+                $query->where('bathrooms', '>=', $bathrooms);
+            })
+            ->latest()
+            ->paginate(6)
+            ->withQueryString();
+
+        return view('welcome', compact('properties'));
+    }
+    /**
+     * Display the Accueil page.
+     */
+
+    public function Accueil()
+    {
+        return view('home');
     }
 
     /**
@@ -17,6 +60,7 @@ class PageController extends Controller
      */
     public function about()
     {
+
         return view('pages.about');
     }
 
