@@ -28,6 +28,8 @@ Route::controller(PageController::class)->group(function () {
     Route::get('/contact', 'contact')->name('contact');
     Route::get('/testimonial', 'testimonial')->name('testimonial');
     Route::get('/404', 'notFound')->name('404');
+    Route::get('allproperties', 'allproperties')->name('allproperties');
+
 });
 
 Route::middleware(['auth'])->group(function () {

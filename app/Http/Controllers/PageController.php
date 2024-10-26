@@ -110,4 +110,42 @@ class PageController extends Controller
     {
         return view('pages.404');
     }
+    /**
+     * Display all properties page.
+     */
+    public function allProperties()
+    {
+        $properties = Property::query()
+            ->with(['images', 'user'])
+            ->withCount('reservations')
+            ->when(request('search'), function($query, $search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%")
+                      ->orWhere('address', 'like', "%{$search}%")
+                      ->orWhere('city', 'like', "%{$search}%");
+                });
+            })
+            ->when(request('type'), function($query, $type) {
+                $query->where('type', $type);
+            })
+            ->when(request('status'), function($query, $status) {
+                $query->where('status', $status);
+            })
+            ->when(request('min_price'), function($query, $price) {
+                $query->where('price', '>=', $price);
+            })
+            ->when(request('max_price'), function($query, $price) {
+                $query->where('price', '<=', $price);
+            })
+            ->when(request('bedrooms'), function($query, $bedrooms) {
+                $query->where('bedrooms', '>=', $bedrooms);
+            })
+            ->when(request('bathrooms'), function($query, $bathrooms) {
+                $query->where('bathrooms', '>=', $bathrooms);
+            })
+            ->latest()->get();
+
+        return view('pages.allproperties', compact('properties'));
+    }
 }
