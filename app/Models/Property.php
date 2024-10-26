@@ -4,18 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Property extends Model
 {
     use HasFactory, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'title',
         'slug',
@@ -29,41 +23,36 @@ class Property extends Model
         'bathrooms',
         'area',
         'floor',
-        'furnished',
-        'available',
         'type',
         'status',
+        'furnished',
         'featured',
-        'user_id',
+        'user_id'
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
-        'id' => 'integer',
-        'price' => 'decimal:2',
-        'area' => 'decimal:2',
         'furnished' => 'boolean',
-        'available' => 'boolean',
         'featured' => 'boolean',
-        'user_id' => 'integer',
+        'price' => 'decimal:2'
     ];
 
-    public function user(): BelongsTo
+    // Relations
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
-    public function reservations(){
-        return $this->belongsTo(Reservation::class);
-    }
+
     public function images()
     {
         return $this->hasMany(PropertyImage::class);
     }
 
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class, 'property_id');
+    }
+
+    // Accesseurs
     public function getStatusColorAttribute()
     {
         return [
@@ -80,5 +69,25 @@ class Property extends Model
             'studio' => 'Studio',
             'duplex' => 'Duplex'
         ][$this->type] ?? $this->type;
+    }
+
+    public function getStatusTextAttribute()
+    {
+        return [
+            'available' => 'Disponible',
+            'rented' => 'Loué',
+            'maintenance' => 'En maintenance'
+        ][$this->status] ?? $this->status;
+    }
+
+    // Scopes
+    public function scopeAvailable($query)
+    {
+        return $query->where('status', 'available');
+    }
+
+    public function scopeFeatured($query)
+    {
+        return $query->where('featured', true);
     }
 }

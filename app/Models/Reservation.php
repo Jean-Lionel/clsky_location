@@ -41,13 +41,60 @@ class Reservation extends Model
         'total_price' => 'decimal:2',
     ];
 
-    public function property(): BelongsTo
-    {
-        return $this->belongsTo(Property::class);
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
+     public function user()
+     {
+         return $this->belongsTo(User::class);
+     }
+ 
+     // Accesseurs
+     public function getStatusColorAttribute()
+     {
+         return [
+             'pending' => 'warning',
+             'confirmed' => 'success',
+             'cancelled' => 'danger',
+             'completed' => 'info',
+         ][$this->status] ?? 'secondary';
+     }
+ 
+     public function getPaymentStatusColorAttribute()
+     {
+         return [
+             'pending' => 'warning',
+             'paid' => 'success',
+             'refunded' => 'info'
+         ][$this->payment_status] ?? 'secondary';
+     }
+ 
+     public function getStatusTextAttribute()
+     {
+         return [
+             'pending' => 'En attente',
+             'confirmed' => 'Confirmée',
+             'cancelled' => 'Annulée',
+             'completed' => 'Terminée'
+         ][$this->status] ?? $this->status;
+     }
+ 
+     // Scopes
+     public function scopeUpcoming($query)
+     {
+         return $query->where('check_in', '>=', now())->orderBy('check_in');
+     }
+ 
+     public function scopeActive($query)
+     {
+         return $query->whereIn('status', ['pending', 'confirmed']);
+     }
+ 
+     // Méthodes
+     public function calculateDuration()
+     {
+         return $this->check_in->diffInDays($this->check_out);
+     }
+ 
+     public function isActive()
+     {
+         return in_array($this->status, ['pending', 'confirmed']);
+     }
 }
