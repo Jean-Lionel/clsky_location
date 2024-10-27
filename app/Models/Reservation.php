@@ -4,17 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Reservation extends Model
 {
     use HasFactory;
+    // SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'property_id',
         'user_id',
@@ -24,77 +20,69 @@ class Reservation extends Model
         'guests',
         'status',
         'payment_status',
-        'notes',
+        'notes'
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
-        'id' => 'integer',
-        'property_id' => 'integer',
-        'user_id' => 'integer',
-        'check_in' => 'date',
-        'check_out' => 'date',
-        'total_price' => 'decimal:2',
+        'check_in' => 'datetime',
+        'check_out' => 'datetime',
+        'total_price' => 'decimal:2'
     ];
 
-     public function user()
-     {
-         return $this->belongsTo(User::class);
-     }
- 
-     // Accesseurs
-     public function getStatusColorAttribute()
-     {
-         return [
-             'pending' => 'warning',
-             'confirmed' => 'success',
-             'cancelled' => 'danger',
-             'completed' => 'info',
-         ][$this->status] ?? 'secondary';
-     }
- 
-     public function getPaymentStatusColorAttribute()
-     {
-         return [
-             'pending' => 'warning',
-             'paid' => 'success',
-             'refunded' => 'info'
-         ][$this->payment_status] ?? 'secondary';
-     }
- 
-     public function getStatusTextAttribute()
-     {
-         return [
-             'pending' => 'En attente',
-             'confirmed' => 'Confirmée',
-             'cancelled' => 'Annulée',
-             'completed' => 'Terminée'
-         ][$this->status] ?? $this->status;
-     }
- 
-     // Scopes
-     public function scopeUpcoming($query)
-     {
-         return $query->where('check_in', '>=', now())->orderBy('check_in');
-     }
- 
-     public function scopeActive($query)
-     {
-         return $query->whereIn('status', ['pending', 'confirmed']);
-     }
- 
-     // Méthodes
-     public function calculateDuration()
-     {
-         return $this->check_in->diffInDays($this->check_out);
-     }
- 
-     public function isActive()
-     {
-         return in_array($this->status, ['pending', 'confirmed']);
-     }
+    // Relations
+    public function property()
+    {
+        return $this->belongsTo(Property::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // Accesseurs pour les statuts
+    public function getStatusColorAttribute()
+    {
+        return [
+            'pending' => 'warning',
+            'confirmed' => 'success',
+            'cancelled' => 'danger',
+            'completed' => 'info'
+        ][$this->status] ?? 'secondary';
+    }
+
+    public function getStatusTextAttribute()
+    {
+        return [
+            'pending' => 'En attente',
+            'confirmed' => 'Confirmée',
+            'cancelled' => 'Annulée',
+            'completed' => 'Terminée'
+        ][$this->status] ?? $this->status;
+    }
+
+    public function getPaymentStatusTextAttribute()
+    {
+        return [
+            'pending' => 'En attente',
+            'paid' => 'Payé',
+            'refunded' => 'Remboursé'
+        ][$this->payment_status] ?? $this->payment_status;
+    }
+
+    // Scopes
+    public function scopeActive($query)
+    {
+        return $query->whereIn('status', ['pending', 'confirmed']);
+    }
+
+    public function scopeUpcoming($query)
+    {
+        return $query->where('check_in', '>', now())->orderBy('check_in');
+    }
+
+    public function scopeCurrentAndFuture($query)
+    {
+        return $query->where('check_out', '>=', now())->orderBy('check_in');
+    }
 }
