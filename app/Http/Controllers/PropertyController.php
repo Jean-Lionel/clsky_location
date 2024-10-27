@@ -6,6 +6,7 @@ use App\Models\Property;
 use App\Models\PropertyImage;
 use App\Http\Requests\PropertyStoreRequest;
 use App\Http\Requests\PropertyUpdateRequest;
+use App\Services\AvailabilityService;
 use App\Services\ImageService;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -348,6 +349,20 @@ class PropertyController extends Controller
     }
 
     
+    public function getAvailabilitySuggestions(Property $property, AvailabilityService $availabilityService)
+{
+    try {
+        $suggestions = $availabilityService->getSuggestions($property);
+        return response()->json($suggestions);
+    } catch (\Exception $e) {
+        logger()->error('Erreur lors de la récupération des suggestions:', [
+            'error' => $e->getMessage(),
+            'property_id' => $property->id
+        ]);
 
-   
+        return response()->json([
+            'error' => 'Une erreur est survenue lors de la récupération des suggestions.'
+        ], 500);
+    }
+}
 }

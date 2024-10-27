@@ -70,6 +70,9 @@ Route::middleware(['auth'])->group(function () {
          // Nouvelle route pour l'ordre des images
     Route::post('properties/{property}/update-image-order', [PropertyController::class, 'updateImageOrder'])
     ->name('properties.update-image-order');
+    Route::get('properties/{property}/availability-suggestions', 
+        [PropertyController::class, 'getAvailabilitySuggestions'])
+        ->name('properties.availability-suggestions');
 });
 
 Auth::routes();
