@@ -25,6 +25,7 @@ return new class extends Migration
             $table->enum('payment_status', ["pending","paid","refunded"])->default('pending');
             $table->text('notes')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::enableForeignKeyConstraints();

@@ -49,4 +49,23 @@ class User extends Authenticatable
         'id' => 'integer',
         'email_verified_at' => 'timestamp',
     ];
+    public function getRoleTextAttribute()
+    {
+        return [
+            'admin' => 'Administrateur',
+            'agent' => 'Agent',
+            'client' => 'Client'
+        ][$this->role] ?? $this->role;
+    }
+
+    // Méthodes
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isAgent()
+    {
+        return $this->role === 'agent';
+    }
 }

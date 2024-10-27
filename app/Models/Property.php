@@ -31,12 +31,11 @@ class Property extends Model
     ];
 
     protected $casts = [
+        'price' => 'decimal:2',
+        'area' => 'decimal:2',
         'furnished' => 'boolean',
-        'featured' => 'boolean',
-        'price' => 'decimal:2'
+        'featured' => 'boolean'
     ];
-
-    protected $with = ['images'];
 
     // Relations
     public function user()
@@ -44,14 +43,14 @@ class Property extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
+    }
+
     public function images()
     {
         return $this->hasMany(PropertyImage::class);
-    }
-
-    public function reservations()
-    {
-        return $this->hasMany(Reservation::class, 'property_id');
     }
 
     // Accesseurs
@@ -64,15 +63,6 @@ class Property extends Model
         ][$this->status] ?? 'secondary';
     }
 
-    public function getTypeTextAttribute()
-    {
-        return [
-            'apartment' => 'Appartement',
-            'studio' => 'Studio',
-            'duplex' => 'Duplex'
-        ][$this->type] ?? $this->type;
-    }
-
     public function getStatusTextAttribute()
     {
         return [
@@ -80,6 +70,15 @@ class Property extends Model
             'rented' => 'Loué',
             'maintenance' => 'En maintenance'
         ][$this->status] ?? $this->status;
+    }
+
+    public function getTypeTextAttribute()
+    {
+        return [
+            'apartment' => 'Appartement',
+            'studio' => 'Studio',
+            'duplex' => 'Duplex'
+        ][$this->type] ?? $this->type;
     }
 
     // Scopes
@@ -91,5 +90,26 @@ class Property extends Model
     public function scopeFeatured($query)
     {
         return $query->where('featured', true);
+    }
+
+    // Méthodes
+    public function isAvailable($checkIn, $checkOut, $excludeReservationId = null)
+    {
+        $query = $this->reservations()
+            ->where('status', '!=', 'cancelled')
+            ->where(function($query) use ($checkIn, $checkOut) {
+                $query->whereBetween('check_in', [$checkIn, $checkOut])
+                    ->orWhereBetween('check_out', [$checkIn, $checkOut])
+                    ->orWhere(function($q) use ($checkIn, $checkOut) {
+                        $q->where('check_in', '<=', $checkIn)
+                          ->where('check_out', '>=', $checkOut);
+                    });
+            });
+
+        if ($excludeReservationId) {
+            $query->where('id', '!=', $excludeReservationId);
+        }
+
+        return $query->count() === 0;
     }
 }
