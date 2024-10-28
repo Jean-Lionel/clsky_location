@@ -2,56 +2,112 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\PaymentControllerStoreRequest;
-use App\Http\Requests\PaymentControllerUpdateRequest;
+use App\Http\Requests\PaymentStoreRequest;
+use App\Http\Requests\PaymentUpdateRequest;
 use App\Models\Payment;
-use Illuminate\Http\RedirectResponse;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 
 class PaymentController extends Controller
 {
-    public function index(Request $request): Response
+    public function index()
     {
-        $payments = Payment::all();
+        $query = Payment::with(['user', 'reservation'])
+            ->when(request('search'), function($query, $search) {
+                $query->where('transaction_id', 'like', "%{$search}%")
+                    ->orWhereHas('user', function($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
+            })
+            ->when(request('status'), function($query, $status) {
+                $query->where('status', $status);
+            })
+            ->when(request('payment_method'), function($query, $method) {
+                $query->where('payment_method', $method);
+            })
+            ->when(request('start_date'), function($query, $date) {
+                $query->whereDate('created_at', '>=', $date);
+            })
+            ->when(request('end_date'), function($query, $date) {
+                $query->whereDate('created_at', '<=', $date);
+            });
 
-        return view('payment.index', compact('payments'));
+        // Statistiques
+        $totalAmount = Payment::sum('amount');
+        $pendingAmount = Payment::where('status', 'pending')->sum('amount');
+        $completedAmount = Payment::where('status', 'completed')->sum('amount');
+        $refundedAmount = Payment::where('status', 'refunded')->sum('amount');
+
+        // Pagination
+        $payments = $query->latest()->paginate(10);
+
+        return view('payment.index', compact(
+            'payments',
+            'totalAmount',
+            'pendingAmount',
+            'completedAmount',
+            'refundedAmount'
+        ));
     }
 
-    public function create(Request $request): Response
+    public function create()
     {
-        return view('payment.create');
+        $reservations = Reservation::with(['property', 'user'])
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->where('payment_status', 'pending')
+            ->get();
+
+        return view('payment.create', compact('reservations'));
     }
 
-    public function store(PaymentControllerStoreRequest $request): Response
+    public function store(PaymentStoreRequest $request)
     {
-        $payment = Payment::create($request->validated());
+        try {
+            $payment = Payment::create([
+                'reservation_id' => $request->reservation_id,
+                'amount' => $request->amount,
+                'payment_method' => $request->payment_method,
+                'transaction_id' => $request->transaction_id,
+                'status' => $request->status,
+                'user_id' => auth()->id()
+            ]);
 
-        $request->session()->flash('payment.id', $payment->id);
+            // Mettre à jour le statut de paiement de la réservation si le paiement est complété
+            if ($request->status === 'completed') {
+                $payment->reservation->update([
+                    'payment_status' => 'paid'
+                ]);
+            }
 
-        return redirect()->route('payments.index');
+            return redirect()->route('payments.show', $payment)
+                ->with('success', 'Paiement créé avec succès');
+
+        } catch (\Exception $e) {
+            // dump($e);
+            return back()->with('error', 'Une erreur est survenue lors de la création du paiement.')
+                ->withInput();
+        }
     }
 
-    public function show(Request $request, Payment $payment): Response
+    public function show(Payment $payment)
     {
+        $payment->load(['reservation.property', 'reservation.user']);
         return view('payment.show', compact('payment'));
     }
 
-    public function edit(Request $request, Payment $payment): Response
+    public function edit(Request $request, Payment $payment)
     {
         return view('payment.edit', compact('payment'));
     }
 
-    public function update(PaymentControllerUpdateRequest $request, Payment $payment): Response
+    public function update(PaymentUpdateRequest $request, Payment $payment)
     {
         $payment->update($request->validated());
-
-        $request->session()->flash('payment.id', $payment->id);
 
         return redirect()->route('payments.index');
     }
 
-    public function destroy(Request $request, Payment $payment): Response
+    public function destroy(Request $request, Payment $payment)
     {
         $payment->delete();
 
