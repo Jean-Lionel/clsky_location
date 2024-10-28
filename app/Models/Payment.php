@@ -11,7 +11,7 @@ class Payment extends Model
 
     protected $fillable = [
         'reservation_id',
-        'user_id',
+        'user_id',           // Ajouté
         'amount',
         'payment_method',
         'transaction_id',
@@ -19,7 +19,9 @@ class Payment extends Model
     ];
 
     protected $casts = [
-        'amount' => 'decimal:2'
+        'amount' => 'decimal:2',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
     // Relations
@@ -33,7 +35,7 @@ class Payment extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Accesseurs pour les statuts
+    // Accesseurs de statut
     public function getStatusColorAttribute()
     {
         return [
@@ -52,5 +54,16 @@ class Payment extends Model
             'failed' => 'Échoué',
             'refunded' => 'Remboursé'
         ][$this->status] ?? $this->status;
+    }
+
+    // Scopes
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeCompleted($query)
+    {
+        return $query->where('status', 'completed');
     }
 }

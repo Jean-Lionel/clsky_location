@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('phone')->nullable();
             $table->text('address')->nullable();
-            $table->enum('role', ["admin","owner","tenant","agent"])->nullable();
+            $table->enum('role', ["admin","owner","tenant","agent","client"])->nullable();
             $table->string('avatar')->nullable();
             $table->enum('status', ["active","inactive"])->default('active');
             $table->string('remember_token')->nullable();

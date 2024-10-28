@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('transaction_id')->nullable();
             $table->enum('status', ["pending","completed","failed","refunded"])->default('pending');
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::enableForeignKeyConstraints();

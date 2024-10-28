@@ -100,11 +100,37 @@ class PaymentController extends Controller
         return view('payment.edit', compact('payment'));
     }
 
-    public function update(PaymentUpdateRequest $request, Payment $payment)
+    public function update(Request $request, Payment $payment)
     {
-        $payment->update($request->validated());
+        $request->validate([
+            'amount' => 'required|numeric|min:0',
+            'payment_method' => 'required|in:card,bank_transfer,cash',
+            'transaction_id' => 'nullable|string|max:255',
+            'status' => 'required|in:pending,completed,failed,refunded'
+        ]);
 
-        return redirect()->route('payments.index');
+        try {
+            $payment->update([
+                'amount' => $request->amount,
+                'payment_method' => $request->payment_method,
+                'transaction_id' => $request->transaction_id,
+                'status' => $request->status
+            ]);
+
+            // Mettre à jour le statut de paiement de la réservation
+            if ($request->status === 'completed') {
+                $payment->reservation->update(['payment_status' => 'paid']);
+            } elseif ($request->status === 'refunded') {
+                $payment->reservation->update(['payment_status' => 'refunded']);
+            }
+
+            return redirect()->route('payments.show', $payment)
+                ->with('success', 'Paiement mis à jour avec succès');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Une erreur est survenue lors de la mise à jour du paiement.')
+                ->withInput();
+        }
     }
 
     public function destroy(Request $request, Payment $payment)
