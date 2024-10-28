@@ -6,9 +6,20 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3">Messages</h1>
-        <a href="{{ route('messages.create') }}" class="btn btn-primary">
-            <i class="bi bi-envelope-plus"></i> Nouveau message
-        </a>
+        <div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+
+                <div>
+                    <a href="{{ route('archived') }}" class="btn btn-outline-secondary me-2">
+                        <i class="bi bi-archive"></i> Messages archivés
+                    </a>
+                    <a href="{{ route('messages.create') }}" class="btn btn-primary">
+                        <i class="bi bi-plus-lg"></i> Nouveau message
+                    </a>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div class="row">
@@ -42,14 +53,14 @@
                                         <td>{{ $message->sender->name }}</td>
                                         <td>{{ $message->receiver->name }}</td>
                                         <td>
-                                            <a href="{{ route('messages.show', $message) }}" 
+                                            <a href="{{ route('messages.show', $message) }}"
                                                class="text-decoration-none">
                                                 {{ $message->subject }}
                                             </a>
                                         </td>
                                         <td>
                                             @if($message->property)
-                                                <a href="{{ route('properties.show', $message->property) }}" 
+                                                <a href="{{ route('properties.show', $message->property) }}"
                                                    class="text-decoration-none">
                                                     {{ $message->property->title }}
                                                 </a>
@@ -60,19 +71,19 @@
                                         <td>{{ $message->created_at->format('d/m/Y H:i') }}</td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
-                                                <a href="{{ route('messages.show', $message) }}" 
+                                                <a href="{{ route('messages.show', $message) }}"
                                                    class="btn btn-outline-primary">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
-                                                <button type="button" 
+                                                <button type="button"
                                                         class="btn btn-outline-danger"
                                                         onclick="confirmDelete({{ $message->id }})">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </div>
-                                            <form id="delete-form-{{ $message->id }}" 
-                                                  action="{{ route('messages.destroy', $message) }}" 
-                                                  method="POST" 
+                                            <form id="delete-form-{{ $message->id }}"
+                                                  action="{{ route('messages.destroy', $message) }}"
+                                                  method="POST"
                                                   class="d-none">
                                                 @csrf
                                                 @method('DELETE')

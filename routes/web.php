@@ -44,6 +44,11 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('payments', App\Http\Controllers\PaymentController::class);
     Route::resource('reviews', App\Http\Controllers\ReviewController::class);
     Route::resource('messages', App\Http\Controllers\MessageController::class);
+    // Routes d'archivage
+    Route::get('archived', [App\Http\Controllers\MessageController::class, 'archived'])->name('archived');
+    Route::post('messages/{message}/archive', [App\Http\Controllers\MessageController::class, 'archive'])->name('messages.archive');
+    Route::post('messages/{message}/unarchive', [App\Http\Controllers\MessageController::class, 'unarchive'])->name('messages.unarchive');
+
     Route::resource('notifications', App\Http\Controllers\NotificationController::class);
     Route::resource('maintenances', App\Http\Controllers\MaintenanceController::class);
     Route::resource('documents', App\Http\Controllers\DocumentController::class);
@@ -70,9 +75,11 @@ Route::middleware(['auth'])->group(function () {
          // Nouvelle route pour l'ordre des images
     Route::post('properties/{property}/update-image-order', [PropertyController::class, 'updateImageOrder'])
     ->name('properties.update-image-order');
-    Route::get('properties/{property}/availability-suggestions', 
+    Route::get('properties/{property}/availability-suggestions',
         [PropertyController::class, 'getAvailabilitySuggestions'])
         ->name('properties.availability-suggestions');
+
+
 });
 
 Auth::routes();

@@ -21,6 +21,8 @@ class Message extends Model
         'property_id',
         'subject',
         'content',
+        'is_archived',
+        'is_archived',
         'read_at',
     ];
 
@@ -34,6 +36,8 @@ class Message extends Model
         'sender_id' => 'integer',
         'receiver_id' => 'integer',
         'property_id' => 'integer',
+        'is_archived' => 'boolean',
+        'archived_at' => 'timestamp',
         'read_at' => 'timestamp',
     ];
 

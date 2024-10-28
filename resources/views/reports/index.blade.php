@@ -1,172 +1,196 @@
 @extends('layouts.admin')
 
-@section('title', 'Rapports - CL SKY APARTMENT')
+@section('title', 'Rapports')
 
 @section('content')
-<div class="container-fluid py-4">
-    <!-- En-tête -->
+<div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3">Rapports & Statistiques</h1>
-        <div>
-            <button class="btn btn-outline-primary me-2">
-                <i class="bi bi-download"></i> Exporter PDF
+        <h1 class="h3">Rapports & Analyses</h1>
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary" onclick="exportReport('pdf')">
+                <i class="bi bi-file-pdf"></i> Exporter PDF
             </button>
-            <button class="btn btn-outline-success">
+            <button type="button" class="btn btn-success" onclick="exportReport('excel')">
                 <i class="bi bi-file-excel"></i> Exporter Excel
             </button>
-        </div>
-    </div>
-
-    <!-- Cartes de statistiques -->
-    <div class="row g-4 mb-4">
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card stats-card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Réservations du mois</h6>
-                            <h3 class="mb-0">{{ $monthlyStats['reservations'] }}</h3>
-                        </div>
-                        <div class="text-primary">
-                            <i class="bi bi-calendar-check fs-1"></i>
-                        </div>
-                    </div>
-                    <div class="text-success mt-2 small">
-                        <i class="bi bi-arrow-up"></i> +8% vs mois dernier
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card stats-card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Revenus du mois</h6>
-                            <h3 class="mb-0">{{ number_format($monthlyStats['revenue']) }}€</h3>
-                        </div>
-                        <div class="text-success">
-                            <i class="bi bi-currency-euro fs-1"></i>
-                        </div>
-                    </div>
-                    <div class="text-success mt-2 small">
-                        <i class="bi bi-arrow-up"></i> +15% vs mois dernier
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card stats-card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Taux d'occupation</h6>
-                            <h3 class="mb-0">{{ $monthlyStats['occupancy_rate'] }}%</h3>
-                        </div>
-                        <div class="text-info">
-                            <i class="bi bi-pie-chart fs-1"></i>
-                        </div>
-                    </div>
-                    <div class="text-success mt-2 small">
-                        <i class="bi bi-arrow-up"></i> +5% vs mois dernier
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card stats-card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">Nouveaux clients</h6>
-                            <h3 class="mb-0">{{ $monthlyStats['new_clients'] }}</h3>
-                        </div>
-                        <div class="text-warning">
-                            <i class="bi bi-people fs-1"></i>
-                        </div>
-                    </div>
-                    <div class="text-success mt-2 small">
-                        <i class="bi bi-arrow-up"></i> +12% vs mois dernier
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
     <!-- Filtres -->
     <div class="card mb-4">
         <div class="card-body">
-            <form class="row g-3">
-                <div class="col-md-4">
+            <form action="{{ route('reports.index') }}" method="GET" class="row g-3">
+                <div class="col-md-3">
                     <label class="form-label">Période</label>
-                    <select class="form-select">
-                        <option>Ce mois</option>
-                        <option>Mois dernier</option>
-                        <option>Ce trimestre</option>
-                        <option>Cette année</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Type de propriété</label>
-                    <select class="form-select">
-                        <option>Tous</option>
-                        <option>Appartements</option>
-                        <option>Studios</option>
-                        <option>Duplex</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">État</label>
-                    <select class="form-select">
-                        <option>Tous</option>
-                        <option>Disponible</option>
-                        <option>Occupé</option>
-                        <option>En maintenance</option>
+                    <select name="period" class="form-select" onchange="this.form.submit()">
+                        <option value="week" {{ request('period') == 'week' ? 'selected' : '' }}>7 derniers jours</option>
+                        <option value="month" {{ request('period') == 'month' ? 'selected' : '' }}>30 derniers jours</option>
+                        <option value="quarter" {{ request('period') == 'quarter' ? 'selected' : '' }}>3 derniers mois</option>
+                        <option value="year" {{ request('period') == 'year' ? 'selected' : '' }}>12 derniers mois</option>
                     </select>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Tableau des rapports -->
-    <div class="card border-0 shadow-sm">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Période</th>
-                            <th>Réservations</th>
-                            <th>Revenus</th>
-                            <th>Taux d'occupation</th>
-                            <th>Nouveaux clients</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Octobre 2024</td>
-                            <td>156</td>
-                            <td>24,500€</td>
-                            <td>85%</td>
-                            <td>45</td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-primary me-1">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary me-1">
-                                    <i class="bi bi-download"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <!-- Ajoutez plus de lignes selon vos besoins -->
-                    </tbody>
-                </table>
+    <!-- Statistiques générales -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted mb-2">Revenus totaux</h6>
+                    <h3 class="mb-0">{{ number_format($stats['total_revenue'], 2) }} €</h3>
+                    <div class="mt-2 small">
+                        <i class="bi bi-graph-up text-success"></i>
+                        <span class="text-success">+{{ number_format($stats['revenue_growth'] ?? 0, 1) }}%</span>
+                        vs période précédente
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted mb-2">Réservations</h6>
+                    <h3 class="mb-0">{{ $stats['total_reservations'] }}</h3>
+                    <div class="mt-2 small">
+                        <i class="bi bi-calendar-check text-primary"></i>
+                        Taux de conversion: {{ number_format($stats['conversion_rate'] ?? 0, 1) }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted mb-2">Taux d'occupation</h6>
+                    <h3 class="mb-0">{{ number_format($stats['average_occupancy'], 1) }}%</h3>
+                    <div class="mt-2 small">
+                        <i class="bi bi-house-check text-info"></i>
+                        Moyenne sur la période
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="text-muted mb-2">Nouveaux clients</h6>
+                    <h3 class="mb-0">{{ $stats['new_customers'] }}</h3>
+                    <div class="mt-2 small">
+                        <i class="bi bi-people text-warning"></i>
+                        Sur la période
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Graphique des revenus -->
+        <div class="col-md-8 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Évolution des revenus</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Répartition par type -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Réservations par type</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="typeChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Taux d'occupation par propriété -->
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Taux d'occupation par propriété</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="occupancyChart" height="200"></canvas>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Configuration des graphiques
+document.addEventListener('DOMContentLoaded', function() {
+    // Graphique des revenus
+    new Chart(document.getElementById('revenueChart'), {
+        type: 'line',
+        data: {
+            labels: {!! json_encode($charts['revenue_by_month']->pluck('month')) !!},
+            datasets: [{
+                label: 'Revenus (€)',
+                data: {!! json_encode($charts['revenue_by_month']->pluck('total')) !!},
+                borderColor: '#3b82f6',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    // Graphique des types
+    new Chart(document.getElementById('typeChart'), {
+        type: 'pie',
+        data: {
+            labels: {!! json_encode($charts['reservations_by_type']->pluck('type')) !!},
+            datasets: [{
+                data: {!! json_encode($charts['reservations_by_type']->pluck('total')) !!},
+                backgroundColor: ['#3b82f6', '#ef4444', '#10b981', '#f59e0b']
+            }]
+        }
+    });
+
+    // Graphique d'occupation
+    new Chart(document.getElementById('occupancyChart'), {
+        type: 'bar',
+        data: {
+            labels: {!! json_encode($charts['occupancy_by_property']->pluck('name')) !!},
+            datasets: [{
+                label: 'Taux d\'occupation (%)',
+                data: {!! json_encode($charts['occupancy_by_property']->pluck('rate')) !!},
+                backgroundColor: '#3b82f6'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+});
+
+function exportReport(format) {
+    const period = document.querySelector('select[name="period"]').value;
+    window.location.href = `{{ route('reports.export') }}?format=${format}&period=${period}`;
+}
+</script>
+@endpush
 @endsection

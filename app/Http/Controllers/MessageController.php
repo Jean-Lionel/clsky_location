@@ -1,5 +1,5 @@
 <?php
-    
+
 namespace App\Http\Controllers;
 
 use App\Models\Message;
@@ -31,9 +31,9 @@ class MessageController extends Controller
         return view('messages.create', compact('users'));
     }
 
-   
 
-    
+
+
 
     public function destroy(Message $message)
     {
@@ -49,7 +49,7 @@ class MessageController extends Controller
             'subject' => 'required|string|max:255',
             'content' => 'required|string',
             'property_id' => 'nullable|exists:properties,id',
-            'attachments.*' => 'nullable|file|mimes:jpeg,png,pdf,doc,docx|max:10240' // 10MB max
+            'attachments.*' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx|max:10240' // 10MB max
         ]);
 
         $message = Message::create([
@@ -64,7 +64,7 @@ class MessageController extends Controller
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
                 $path = $file->store('message-attachments', 'public');
-                
+
                 $message->attachments()->create([
                     'file_name' => $file->getClientOriginalName(),
                     'file_path' => $path,
@@ -78,25 +78,25 @@ class MessageController extends Controller
             ->with('success', 'Message envoyé avec succès');
     }
 
-    public function archive(Message $message)
-    {
-        $message->update([
-            'is_archived' => true,
-            'archived_at' => now()
-        ]);
+    // public function archive(Message $message)
+    // {
+    //     $message->update([
+    //         'is_archived' => true,
+    //         'archived_at' => now()
+    //     ]);
 
-        return back()->with('success', 'Message archivé avec succès');
-    }
+    //     return back()->with('success', 'Message archivé avec succès');
+    // }
 
-    public function unarchive(Message $message)
-    {
-        $message->update([
-            'is_archived' => false,
-            'archived_at' => null
-        ]);
+    // public function unarchive(Message $message)
+    // {
+    //     $message->update([
+    //         'is_archived' => false,
+    //         'archived_at' => null
+    //     ]);
 
-        return back()->with('success', 'Message désarchivé avec succès');
-    }
+    //     return back()->with('success', 'Message désarchivé avec succès');
+    // }
 
     public function downloadAttachment($id)
     {
@@ -106,7 +106,7 @@ class MessageController extends Controller
         }
 
         return Storage::disk('public')->download(
-            $attachment->file_path, 
+            $attachment->file_path,
             $attachment->file_name
         );
     }
@@ -128,7 +128,7 @@ class MessageController extends Controller
         $relatedMessages = Message::where(function($query) use ($message) {
                 $query->where('subject', 'like', 'Re: ' . $message->subject)
                     ->orWhere('subject', $message->subject);
-                
+
                 if ($message->property_id) {
                     $query->orWhere('property_id', $message->property_id);
                 }
@@ -148,7 +148,51 @@ class MessageController extends Controller
 
     private function canViewMessage(Message $message)
     {
-        return auth()->id() === $message->sender_id || 
+        return auth()->id() === $message->sender_id ||
                auth()->id() === $message->receiver_id;
+    }
+
+    public function archived()
+    {
+        $messages = Message::where(function($query) {
+                $query->where('sender_id', auth()->id())
+                    ->orWhere('receiver_id', auth()->id());
+            })
+            ->where('is_archived', true)
+            ->with(['sender', 'receiver', 'property'])
+            ->latest()
+            ->paginate(15);
+
+        return view('messages.archived', compact('messages'));
+    }
+
+    public function archive(Message $message)
+    {
+        // Vérifier si l'utilisateur a le droit d'archiver ce message
+        if ($message->sender_id !== auth()->id() && $message->receiver_id !== auth()->id()) {
+            return back()->with('error', 'Vous n\'êtes pas autorisé à archiver ce message.');
+        }
+
+        $message->update([
+            'is_archived' => true,
+            'archived_at' => now()
+        ]);
+
+        return back()->with('success', 'Message archivé avec succès.');
+    }
+
+    public function unarchive(Message $message)
+    {
+        // Vérifier si l'utilisateur a le droit de désarchiver ce message
+        if ($message->sender_id !== auth()->id() && $message->receiver_id !== auth()->id()) {
+            return back()->with('error', 'Vous n\'êtes pas autorisé à désarchiver ce message.');
+        }
+
+        $message->update([
+            'is_archived' => false,
+            'archived_at' => null
+        ]);
+
+        return back()->with('success', 'Message désarchivé avec succès.');
     }
 }

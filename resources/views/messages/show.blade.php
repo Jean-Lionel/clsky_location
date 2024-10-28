@@ -24,7 +24,7 @@
                     <div>
                         <h5 class="card-title mb-1">{{ $message->subject }}</h5>
                         <small class="text-muted">
-                            De: <strong>{{ $message->sender->name }}</strong> 
+                            De: <strong>{{ $message->sender->name }}</strong>
                             à: <strong>{{ $message->receiver->name }}</strong>
                         </small>
                     </div>
@@ -36,8 +36,8 @@
                     @if($message->property)
                         <div class="alert alert-info mb-3">
                             <i class="bi bi-building me-2"></i>
-                            Concernant la propriété: 
-                            <a href="{{ route('properties.show', $message->property) }}" 
+                            Concernant la propriété:
+                            <a href="{{ route('properties.show', $message->property) }}"
                                class="alert-link">
                                 {{ $message->property->title }}
                             </a>
@@ -53,13 +53,15 @@
                         <div>
                             @if($message->read_at && $message->receiver_id === auth()->id())
                                 <small class="text-muted">
-                                    <i class="bi bi-check2-all"></i> 
-                                    Lu le {{ $message->read_at->format('d/m/Y H:i') }}
+                                    <i class="bi bi-check2-all"></i>
+                                    @if ($message->read_at)
+                                    lu le {{ \Carbon\Carbon::createFromTimestamp($message->read_at)->format('d/m/Y H:i') }}
+                                    @endif
                                 </small>
                             @endif
                         </div>
                         <div>
-                            <button type="button" 
+                            <button type="button"
                                     class="btn btn-sm btn-outline-danger"
                                     onclick="confirmDelete()">
                                 <i class="bi bi-trash"></i> Supprimer
@@ -77,35 +79,35 @@
                 <div class="card-body">
                     <form action="{{ route('messages.store') }}" method="POST">
                         @csrf
-                        <input type="hidden" 
-                               name="receiver_id" 
+                        <input type="hidden"
+                               name="receiver_id"
                                value="{{ $message->sender_id }}">
-                        <input type="hidden" 
-                               name="property_id" 
+                        <input type="hidden"
+                               name="property_id"
                                value="{{ $message->property_id }}">
 
                         <div class="mb-3">
                             <label for="subject" class="form-label">Sujet</label>
-                            <input type="text" 
-                                   class="form-control" 
-                                   id="subject" 
-                                   name="subject" 
-                                   value="Re: {{ $message->subject }}" 
+                            <input type="text"
+                                   class="form-control"
+                                   id="subject"
+                                   name="subject"
+                                   value="Re: {{ $message->subject }}"
                                    required>
                         </div>
 
                         <div class="mb-3">
                             <label for="content" class="form-label">Message</label>
-                            <textarea class="form-control" 
-                                      id="content" 
-                                      name="content" 
-                                      rows="5" 
+                            <textarea class="form-control"
+                                      id="content"
+                                      name="content"
+                                      rows="5"
                                       required></textarea>
                         </div>
 
                         <div class="text-end">
-                            <button type="button" 
-                                    class="btn btn-secondary me-2" 
+                            <button type="button"
+                                    class="btn btn-secondary me-2"
                                     onclick="hideReplyForm()">
                                 Annuler
                             </button>
@@ -130,11 +132,11 @@
                                     <div>
                                         <h6 class="mb-1">{{ $relatedMessage->subject }}</h6>
                                         <small class="text-muted">
-                                            De {{ $relatedMessage->sender->name }} 
+                                            De {{ $relatedMessage->sender->name }}
                                             le {{ $relatedMessage->created_at->format('d/m/Y H:i') }}
                                         </small>
                                     </div>
-                                    <a href="{{ route('messages.show', $relatedMessage) }}" 
+                                    <a href="{{ route('messages.show', $relatedMessage) }}"
                                        class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-eye"></i>
                                     </a>
@@ -155,13 +157,13 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-3">
                         @if($message->sender->avatar)
-                            <img src="{{ Storage::url($message->sender->avatar) }}" 
-                                 class="rounded-circle me-3" 
-                                 width="48" 
-                                 height="48" 
+                            <img src="{{ Storage::url($message->sender->avatar) }}"
+                                 class="rounded-circle me-3"
+                                 width="48"
+                                 height="48"
                                  alt="{{ $message->sender->name }}">
                         @else
-                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" 
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
                                  style="width: 48px; height: 48px;">
                                 {{ substr($message->sender->name, 0, 1) }}
                             </div>
@@ -187,7 +189,7 @@
     <div class="card mt-3">
         <div class="card-header">
             <h5 class="card-title mb-0">
-                <i class="bi bi-paperclip"></i> 
+                <i class="bi bi-paperclip"></i>
                 Pièces jointes ({{ $message->attachments->count() }})
             </h5>
         </div>
@@ -199,7 +201,7 @@
                         {{ $attachment->file_name }}
                         <small class="text-muted">({{ $attachment->formatted_size }})</small>
                     </div>
-                    <a href="{{ route('messages.download-attachment', $attachment) }}" 
+                    <a href="{{ route('messages.download-attachment', $attachment) }}"
                        class="btn btn-sm btn-outline-primary">
                         <i class="bi bi-download"></i>
                     </a>
@@ -233,10 +235,10 @@
             <!-- Propriété concernée si applicable -->
             @if($message->property)
                 <div class="card">
-                    <img src="{{ $message->property->images->where('is_primary', true)->first() 
+                    <img src="{{ $message->property->images->where('is_primary', true)->first()
                         ? Storage::url($message->property->images->where('is_primary', true)->first()->image_path)
-                        : 'placeholder.jpg' }}" 
-                         class="card-img-top" 
+                        : 'placeholder.jpg' }}"
+                         class="card-img-top"
                          alt="{{ $message->property->title }}">
                     <div class="card-body">
                         <h5 class="card-title">{{ $message->property->title }}</h5>
@@ -244,7 +246,7 @@
                             <i class="bi bi-geo-alt me-2"></i>
                             {{ $message->property->address }}
                         </p>
-                        <a href="{{ route('properties.show', $message->property) }}" 
+                        <a href="{{ route('properties.show', $message->property) }}"
                            class="btn btn-outline-primary btn-sm w-100">
                             <i class="bi bi-building"></i> Voir la propriété
                         </a>
@@ -274,9 +276,9 @@ function confirmDelete() {
 @endpush
 
 <!-- Formulaire de suppression caché -->
-<form id="deleteForm" 
-      action="{{ route('messages.destroy', $message) }}" 
-      method="POST" 
+<form id="deleteForm"
+      action="{{ route('messages.destroy', $message) }}"
+      method="POST"
       class="d-none">
     @csrf
     @method('DELETE')
