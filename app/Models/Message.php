@@ -51,4 +51,9 @@ class Message extends Model
     {
         return $this->belongsTo(Property::class);
     }
+
+    public function attachments()
+    {
+        return $this->hasMany(MessageAttachment::class);
+    }
 }

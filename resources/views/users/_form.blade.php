@@ -97,7 +97,6 @@
                     name="role"
                     required>
                 <option value="">Sélectionner un rôle</option>
-                $table->enum('role', ["admin","owner","tenant","agent","client"])->nullable();
                 <option value="admin" {{ (old('role', $user->role ?? '') == 'admin') ? 'selected' : '' }}>Administrateur</option>
                 <option value="agent" {{ (old('role', $user->role ?? '') == 'agent') ? 'selected' : '' }}>Agent</option>
                 <option value="tenant" {{ (old('role', $user->role ?? '') == 'tenant') ? 'selected' : '' }}>Locataire</option>

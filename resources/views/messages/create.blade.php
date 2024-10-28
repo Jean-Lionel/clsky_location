@@ -21,13 +21,13 @@
                         <!-- Destinataire -->
                         <div class="mb-3">
                             <label for="receiver_id" class="form-label">Destinataire</label>
-                            <select class="form-select @error('receiver_id') is-invalid @enderror" 
-                                    id="receiver_id" 
-                                    name="receiver_id" 
+                            <select class="form-select @error('receiver_id') is-invalid @enderror"
+                                    id="receiver_id"
+                                    name="receiver_id"
                                     required>
                                 <option value="">Sélectionnez un destinataire</option>
                                 @foreach($users as $user)
-                                    <option value="{{ $user->id }}" 
+                                    <option value="{{ $user->id }}"
                                             {{ old('receiver_id') == $user->id ? 'selected' : '' }}>
                                         {{ $user->name }} ({{ $user->role_text }})
                                     </option>
@@ -42,12 +42,12 @@
                         @if(isset($properties) && $properties->count() > 0)
                             <div class="mb-3">
                                 <label for="property_id" class="form-label">Concernant la propriété (optionnel)</label>
-                                <select class="form-select @error('property_id') is-invalid @enderror" 
-                                        id="property_id" 
+                                <select class="form-select @error('property_id') is-invalid @enderror"
+                                        id="property_id"
                                         name="property_id">
                                     <option value="">Sélectionnez une propriété</option>
                                     @foreach($properties as $property)
-                                        <option value="{{ $property->id }}" 
+                                        <option value="{{ $property->id }}"
                                                 {{ old('property_id') == $property->id ? 'selected' : '' }}>
                                             {{ $property->title }}
                                         </option>
@@ -62,11 +62,11 @@
                         <!-- Sujet -->
                         <div class="mb-3">
                             <label for="subject" class="form-label">Sujet</label>
-                            <input type="text" 
-                                   class="form-control @error('subject') is-invalid @enderror" 
-                                   id="subject" 
-                                   name="subject" 
-                                   value="{{ old('subject') }}" 
+                            <input type="text"
+                                   class="form-control @error('subject') is-invalid @enderror"
+                                   id="subject"
+                                   name="subject"
+                                   value="{{ old('subject') }}"
                                    required>
                             @error('subject')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -76,24 +76,24 @@
                         <!-- Message -->
                         <div class="mb-4">
                             <label for="content" class="form-label">Message</label>
-                            <textarea class="form-control @error('content') is-invalid @enderror" 
-                                      id="content" 
-                                      name="content" 
-                                      rows="6" 
+                            <textarea class="form-control @error('content') is-invalid @enderror"
+                                      id="content"
+                                      name="content"
+                                      rows="6"
                                       required>{{ old('content') }}</textarea>
                             @error('content')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="mb-3">
-                <label for="receiver_id" class="form-label">Destinataire</label>
-                <select class="form-select @error('receiver_id') is-invalid @enderror" 
+                {{-- <label for="receiver_id" class="form-label">Destinataire</label>
+                <select class="form-select @error('receiver_id') is-invalid @enderror"
                         name="receiver_id" required>
                     <option value="">Sélectionner un destinataire</option>
                     @foreach($users as $user)
                         <option value="{{ $user->id }}">{{ $user->name }}</option>
                     @endforeach
-                </select>
+                </select> --}}
             </div>
 
             <div class="mb-3">
@@ -109,10 +109,10 @@
             <!-- Zone de pièces jointes -->
             <div class="mb-3">
                 <label for="attachments" class="form-label">Pièces jointes</label>
-                <input type="file" 
-                       class="form-control" 
-                       name="attachments[]" 
-                       multiple 
+                <input type="file"
+                       class="form-control"
+                       name="attachments[]"
+                       multiple
                        accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
                 <small class="text-muted">
                     Formats acceptés : jpg, png, pdf, doc, docx (max 10MB par fichier)
@@ -173,17 +173,17 @@
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        <button type="button" 
+                        <button type="button"
                                 class="btn btn-outline-secondary text-start"
                                 onclick="useTemplate('demande-info')">
                             Demande d'informations
                         </button>
-                        <button type="button" 
+                        <button type="button"
                                 class="btn btn-outline-secondary text-start"
                                 onclick="useTemplate('reservation')">
                             Question sur une réservation
                         </button>
-                        <button type="button" 
+                        <button type="button"
                                 class="btn btn-outline-secondary text-start"
                                 onclick="useTemplate('disponibilite')">
                             Vérification de disponibilité
