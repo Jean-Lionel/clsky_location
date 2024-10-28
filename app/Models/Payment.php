@@ -2,47 +2,55 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Payment extends Model
 {
-    use HasFactory;
+    use SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'reservation_id',
         'user_id',
         'amount',
         'payment_method',
         'transaction_id',
-        'status',
+        'status'
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
-        'id' => 'integer',
-        'reservation_id' => 'integer',
-        'user_id' => 'integer',
-        'amount' => 'decimal:2',
+        'amount' => 'decimal:2'
     ];
 
-    public function reservation(): BelongsTo
+    // Relations
+    public function reservation()
     {
         return $this->belongsTo(Reservation::class);
     }
 
-    public function user(): BelongsTo
+    public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // Accesseurs pour les statuts
+    public function getStatusColorAttribute()
+    {
+        return [
+            'pending' => 'warning',
+            'completed' => 'success',
+            'failed' => 'danger',
+            'refunded' => 'info'
+        ][$this->status] ?? 'secondary';
+    }
+
+    public function getStatusTextAttribute()
+    {
+        return [
+            'pending' => 'En attente',
+            'completed' => 'Complété',
+            'failed' => 'Échoué',
+            'refunded' => 'Remboursé'
+        ][$this->status] ?? $this->status;
     }
 }

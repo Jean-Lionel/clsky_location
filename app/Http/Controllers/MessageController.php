@@ -31,35 +31,9 @@ class MessageController extends Controller
         return view('messages.create', compact('users'));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'receiver_id' => 'required|exists:users,id',
-            'subject' => 'required|string|max:255',
-            'content' => 'required|string',
-            'property_id' => 'nullable|exists:properties,id'
-        ]);
+   
 
-        $message = Message::create([
-            'sender_id' => auth()->id(),
-            'receiver_id' => $request->receiver_id,
-            'subject' => $request->subject,
-            'content' => $request->content,
-            'property_id' => $request->property_id
-        ]);
-
-        return redirect()->route('messages.show', $message)
-            ->with('success', 'Message envoyé avec succès');
-    }
-
-    public function show(Message $message)
-    {
-        if ($message->receiver_id === auth()->id() && !$message->read_at) {
-            $message->update(['read_at' => now()]);
-        }
-
-        return view('messages.show', compact('message'));
-    }
+    
 
     public function destroy(Message $message)
     {
