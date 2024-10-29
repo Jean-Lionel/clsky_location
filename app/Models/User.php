@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable 
+class User extends Authenticatable
 {
     use HasFactory, SoftDeletes;
     use   Notifiable;
@@ -68,4 +68,16 @@ class User extends Authenticatable
     {
         return $this->role === 'agent';
     }
+
+    public function reservations(){
+        $this->hasMany(Reservation::class);
+    }
+
+    public function payments(){
+        $this->hasMany(Payment::class);
+    }
+
+    const ROLE_ADMIN = 'admin';
+    const ROLE_CLIENT = 'client';
+
 }

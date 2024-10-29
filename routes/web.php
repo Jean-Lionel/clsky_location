@@ -2,11 +2,9 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\PageController;
-use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\SettingController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -87,6 +85,15 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::name('client.')->prefix('client')->group(function () {
+
+    // Routes pour la connexion et l'inscription
+
+    Route::get('/login', [App\Http\Controllers\Client\AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [App\Http\Controllers\Client\AuthController::class, 'login'])->name('login.post');
+    Route::get('/register', [App\Http\Controllers\Client\AuthController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [App\Http\Controllers\Client\AuthController::class, 'register'])->name('register.post');
+
+
     // Route accessible sans authentification
     Route::get('/properties', [App\Http\Controllers\Client\PropertyController::class, 'index'])->name('properties.index');
     Route::get('/properties/{property}', [App\Http\Controllers\Client\PropertyController::class, 'show'])->name('properties.show');
@@ -97,14 +104,17 @@ Route::name('client.')->prefix('client')->middleware(['auth'])->group(function (
     Route::post('/properties/{property}/reserve', [App\Http\Controllers\Client\PropertyController::class, 'reserve'])->name('properties.reserve');
 
     // Routes pour les réservations
-    Route::get('/reservations', [ReservationController::class, 'index'])->name('reservations.index');
-    Route::get('/reservations/{reservation}', [ReservationController::class, 'show'])->name('reservations.show');
-    Route::post('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservations.cancel');
+    Route::get('/reservations', [App\Http\Controllers\Client\ReservationController::class, 'index'])->name('reservations.index');
+    Route::get('/reservations/{reservation}', [App\Http\Controllers\Client\ReservationController::class, 'show'])->name('reservations.show');
+    Route::post('/reservations/{reservation}/cancel', [App\Http\Controllers\Client\ReservationController::class, 'cancel'])->name('reservations.cancel');
 
     // Routes pour les paiements
-    Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
-    Route::post('/payments/{reservation}/pay', [PaymentController::class, 'pay'])->name('payments.pay');
-    Route::get('/payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');
+    Route::get('/payments', [App\Http\Controllers\Client\PaymentController::class, 'index'])->name('payments.index');
+    Route::post('/payments/{reservation}/pay', [App\Http\Controllers\Client\PaymentController::class, 'pay'])->name('payments.pay');
+    Route::get('/payments/{payment}', [App\Http\Controllers\Client\PaymentController::class, 'show'])->name('payments.show');
+
+    // logout the user
+    Route::post('/logout', [App\Http\Controllers\Client\AuthController::class, 'logout'])->name('logout');
 });
 
 Auth::routes();

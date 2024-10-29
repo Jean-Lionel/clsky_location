@@ -60,10 +60,15 @@
                 <a href=" {{route('contact')}}" class="nav-item nav-link {{ Request::is('contact') ? 'active' : '' }}">Contact</a>
             </div>
            @if (Auth::check())
-               <a href="{{ route('logout') }}" class="btn btn-primary px-3 d-none d-lg-flex">Logout</a>
+            <form method="POST" action="{{ route('client.logout') }}">
+                @csrf
+                <button type="submit" class="btn btn-primary px-3 d-none d-lg-flex">
+                    <i class="bi bi-box-arrow-right me-2"></i>Logout
+                </button>
+            </form>
 
            @else
-            <a href="{{ route('login') }}" class="btn btn-primary px-3 d-none d-lg-flex">Login</a>
+            <a href="{{ route('client.login') }}" class="btn btn-primary px-3 d-none d-lg-flex">Login</a>
            @endif
 
         </div>

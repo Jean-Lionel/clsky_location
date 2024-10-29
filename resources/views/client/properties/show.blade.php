@@ -106,7 +106,7 @@
                     <h5>Description</h5>
                     <p class="mb-4">{{ $property->description }}</p>
 
-                    <h5>Équipements</h5>
+                    {{-- <h5>Équipements</h5>
                     <div class="row g-3 mb-4">
                         @foreach($property->amenities as $amenity)
                             <div class="col-md-4">
@@ -114,7 +114,7 @@
                                 {{ $amenity->name }}
                             </div>
                         @endforeach
-                    </div>
+                    </div> --}}
 
                     <h5>Localisation</h5>
                     <p>

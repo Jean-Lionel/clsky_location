@@ -112,4 +112,8 @@ class Property extends Model
 
         return $query->count() === 0;
     }
+
+    public function amenities(){
+        $this->belongsToMany(Amenity::class,'property_amenities');
+    }
 }

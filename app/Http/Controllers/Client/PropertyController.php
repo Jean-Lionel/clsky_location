@@ -42,7 +42,8 @@ class PropertyController extends Controller
 
     public function show(Property $property)
     {
-        $property->load(['images', 'amenities']);
+        // $property->load(['images', 'amenities']);
+        $property->load(['images']);
 
         // Vérifier les disponibilités pour les 3 prochains mois
         $availableDates = $this->getAvailableDates($property, now(), now()->addMonths(3));
