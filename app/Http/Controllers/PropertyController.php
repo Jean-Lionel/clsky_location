@@ -124,7 +124,7 @@ class PropertyController extends Controller
     public function show(Property $property)
     {
         $property->load(['images', 'user', 'reservations.user']);
-        
+
         return view('properties.show', compact('property'));
     }
 
@@ -139,7 +139,7 @@ class PropertyController extends Controller
             \DB::beginTransaction();
 
             $data = $request->validated();
-            
+
             if ($property->title !== $data['title']) {
                 $data['slug'] = $this->generateUniqueSlug($data['title']);
             }
@@ -231,7 +231,7 @@ class PropertyController extends Controller
     {
         foreach ($images as $image) {
             // Validation supplémentaire
-            if (!$image->isValid() || 
+            if (!$image->isValid() ||
                 !in_array($image->getClientOriginalExtension(), ['jpg', 'jpeg', 'png'])) {
                 continue;
             }
@@ -304,7 +304,7 @@ class PropertyController extends Controller
     }
 }
 
-   
+
     protected function generateUniqueSlug($title)
     {
         $slug = Str::slug($title);
@@ -348,7 +348,7 @@ class PropertyController extends Controller
         }
     }
 
-    
+
     public function getAvailabilitySuggestions(Property $property, AvailabilityService $availabilityService)
 {
     try {

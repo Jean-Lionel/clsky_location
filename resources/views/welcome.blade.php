@@ -233,7 +233,7 @@
                                 <div class="carousel-inner">
                                     @forelse($property->images as $key => $image)
                                         <div class="carousel-item {{ $key === 0 ? 'active' : '' }}">
-                                            <a class="d-block h5 mb-2 text-truncate" href="{{ route('properties.show', $property->id) }}">
+                                            <a class="d-block h5 mb-2 text-truncate" href="{{ route('client.properties.show', $property->id) }}">
 
                                             <img src="{{ Storage::url($image->image_path) }}"
                                                  class="d-block w-100"

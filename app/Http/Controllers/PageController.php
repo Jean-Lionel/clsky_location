@@ -3,46 +3,39 @@
 namespace App\Http\Controllers;
 
 use App\Models\Property;
+use Illuminate\Http\Client\Request as ClientRequest;
+use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
     /**
      * Display the home page.
      */
-    public function home()
+    public function home(Request $request)
     {
-        $properties = Property::query()
-            ->with(['images', 'user'])
-            ->withCount('reservations')
-            ->when(request('search'), function($query, $search) {
-                $query->where(function($q) use ($search) {
-                    $q->where('title', 'like', "%{$search}%")
-                      ->orWhere('description', 'like', "%{$search}%")
-                      ->orWhere('address', 'like', "%{$search}%")
-                      ->orWhere('city', 'like', "%{$search}%");
+        $query = Property::with('images')
+            ->where('status', 'available')
+            ->when($request->search, function($q, $search) {
+                $q->where(function($query) use ($search) {
+                    $query->where('title', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%")
+                        ->orWhere('address', 'like', "%{$search}%");
                 });
             })
-            ->when(request('type'), function($query, $type) {
-                $query->where('type', $type);
+            ->when($request->type, function($q, $type) {
+                $q->where('type', $type);
             })
-            ->when(request('status'), function($query, $status) {
-                $query->where('status', $status);
+            ->when($request->min_price, function($q, $price) {
+                $q->where('price', '>=', $price);
             })
-            ->when(request('min_price'), function($query, $price) {
-                $query->where('price', '>=', $price);
+            ->when($request->max_price, function($q, $price) {
+                $q->where('price', '<=', $price);
             })
-            ->when(request('max_price'), function($query, $price) {
-                $query->where('price', '<=', $price);
-            })
-            ->when(request('bedrooms'), function($query, $bedrooms) {
-                $query->where('bedrooms', '>=', $bedrooms);
-            })
-            ->when(request('bathrooms'), function($query, $bathrooms) {
-                $query->where('bathrooms', '>=', $bathrooms);
-            })
-            ->latest()
-            ->paginate(6)
-            ->withQueryString();
+            ->when($request->bedrooms, function($q, $bedrooms) {
+                $q->where('bedrooms', '>=', $bedrooms);
+            });
+
+        $properties = $query->latest()->paginate(6);
 
         return view('welcome', compact('properties'));
     }
@@ -113,38 +106,31 @@ class PageController extends Controller
     /**
      * Display all properties page.
      */
-    public function allProperties()
+    public function allProperties(Request $request)
     {
-        $properties = Property::query()
-            ->with(['images', 'user'])
-            ->withCount('reservations')
-            ->when(request('search'), function($query, $search) {
-                $query->where(function($q) use ($search) {
-                    $q->where('title', 'like', "%{$search}%")
-                      ->orWhere('description', 'like', "%{$search}%")
-                      ->orWhere('address', 'like', "%{$search}%")
-                      ->orWhere('city', 'like', "%{$search}%");
+        $query = Property::with('images')
+            ->where('status', 'available')
+            ->when($request->search, function($q, $search) {
+                $q->where(function($query) use ($search) {
+                    $query->where('title', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%")
+                        ->orWhere('address', 'like', "%{$search}%");
                 });
             })
-            ->when(request('type'), function($query, $type) {
-                $query->where('type', $type);
+            ->when($request->type, function($q, $type) {
+                $q->where('type', $type);
             })
-            ->when(request('status'), function($query, $status) {
-                $query->where('status', $status);
+            ->when($request->min_price, function($q, $price) {
+                $q->where('price', '>=', $price);
             })
-            ->when(request('min_price'), function($query, $price) {
-                $query->where('price', '>=', $price);
+            ->when($request->max_price, function($q, $price) {
+                $q->where('price', '<=', $price);
             })
-            ->when(request('max_price'), function($query, $price) {
-                $query->where('price', '<=', $price);
-            })
-            ->when(request('bedrooms'), function($query, $bedrooms) {
-                $query->where('bedrooms', '>=', $bedrooms);
-            })
-            ->when(request('bathrooms'), function($query, $bathrooms) {
-                $query->where('bathrooms', '>=', $bathrooms);
-            })
-            ->latest()->get();
+            ->when($request->bedrooms, function($q, $bedrooms) {
+                $q->where('bedrooms', '>=', $bedrooms);
+            });
+
+        $properties = $query->latest()->get();
 
         return view('pages.allproperties', compact('properties'));
     }

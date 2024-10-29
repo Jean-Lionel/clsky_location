@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Property;
 use App\Models\Reservation;
 use App\Models\Payment;
+use App\Services\ReportsExport;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
@@ -67,47 +70,17 @@ class ReportController extends Controller
         return round(($occupiedDays / ($totalDays * $totalProperties)) * 100, 2);
     }
 
-    private function getRevenueByMonth()
-    {
-        return Payment::where('status', 'completed')
-            ->where('created_at', '>=', now()->subMonths(6))
-            ->selectRaw('MONTH(created_at) as month, SUM(amount) as total')
-            ->groupBy('month')
-            ->orderBy('month')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'month' => Carbon::create()->month($item->month)->format('F'),
-                    'total' => $item->total
-                ];
-            });
-    }
 
     private function getReservationsByType()
     {
-        return Property::withCount(['reservations' => function ($query) {
-                $query->where('created_at', '>=', now()->subMonths(6));
-            }])
-            ->selectRaw('type, COUNT(*) as total')
+        return Property::select('type')
+            ->selectRaw('COUNT(*) as total')
+            ->selectRaw('SUM(CASE WHEN reservations.created_at >= ? THEN 1 ELSE 0 END) as reservations_count', [now()->subMonths(6)])
+            ->leftJoin('reservations', 'properties.id', '=', 'reservations.property_id')
             ->groupBy('type')
             ->get();
     }
 
-    private function getOccupancyByProperty()
-    {
-        $properties = Property::with(['reservations' => function ($query) {
-                $query->where('created_at', '>=', now()->subMonths(6));
-            }])
-            ->get()
-            ->map(function ($property) {
-                return [
-                    'name' => $property->title,
-                    'rate' => $this->calculatePropertyOccupancy($property)
-                ];
-            });
-
-        return $properties;
-    }
 
     private function calculatePropertyOccupancy($property)
     {
@@ -122,33 +95,107 @@ class ReportController extends Controller
         return round(($occupiedDays / $totalDays) * 100, 2);
     }
 
+
     public function export(Request $request)
     {
-        $format = $request->get('format', 'pdf');
         $period = $request->get('period', 'month');
+        $format = $request->get('format', 'pdf');
         $startDate = $this->getStartDate($period);
 
         $data = [
+            'period' => [
+                'start' => $startDate->format('d/m/Y'),
+                'end' => now()->format('d/m/Y'),
+            ],
             'stats' => [
-                'period' => $period,
-                'start_date' => $startDate->format('Y-m-d'),
-                'end_date' => now()->format('Y-m-d'),
                 'total_revenue' => Payment::where('status', 'completed')
                     ->whereBetween('created_at', [$startDate, now()])
                     ->sum('amount'),
+
                 'total_reservations' => Reservation::whereBetween('created_at', [$startDate, now()])
                     ->count(),
-                'average_occupancy' => $this->calculateOccupancyRate($startDate, now())
+
+                'average_occupancy' => $this->calculateOccupancyRate($startDate, now()),
+
+                'new_customers' => Reservation::whereBetween('created_at', [$startDate, now()])
+                    ->distinct('user_id')
+                    ->count()
             ],
             'reservations' => Reservation::with(['property', 'user'])
                 ->whereBetween('created_at', [$startDate, now()])
-                ->get()
+                ->get(),
+
+            'revenue_by_month' => $this->getRevenueByMonth(),
+            'occupancy_by_property' => $this->getOccupancyByProperty()
         ];
 
-        return match($format) {
-            'pdf' => $this->generatePdf($data),
-            'excel' => $this->generateExcel($data),
-            default => redirect()->back()->with('error', 'Format non supporté')
-        };
+        if ($format === 'pdf') {
+            return $this->exportPDF($data);
+        } else {
+            return $this->exportExcel($data);
+        }
     }
+
+    protected function exportPDF($data)
+    {
+        $pdf = Pdf::loadView('reports.pdf', $data);
+
+        return $pdf->download('rapport-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    protected function exportExcel($data)
+    {
+        return Excel::download(
+            new ReportsExport($data),
+            'rapport-' . now()->format('Y-m-d') . '.xlsx'
+        );
+    }
+    private function getRevenueByMonth()
+    {
+    return Payment::where('status', 'completed')
+        ->where('created_at', '>=', now()->subMonths(6))
+        ->select(\DB::raw('MONTH(created_at) as month'))
+        ->selectRaw('SUM(amount) as total')
+        ->groupBy(\DB::raw('MONTH(created_at)'))
+        ->orderBy('month')
+        ->get()
+        ->map(function ($item) {
+            return [
+                'month' => Carbon::create()->month($item->month)->format('F'),
+                'total' => $item->total
+            ];
+        });
+}
+
+    private function getOccupancyByProperty()
+    {
+    return Property::select('properties.id', 'properties.title')
+        ->selectRaw('
+            COALESCE(
+                SUM(DATEDIFF(
+                    LEAST(reservations.check_out, ?),
+                    GREATEST(reservations.check_in, ?)
+                )) / ?, 0
+            ) * 100 as rate
+        ', [
+            now(),
+            now()->subMonths(6),
+            now()->diffInDays(now()->subMonths(6))
+        ])
+        ->leftJoin('reservations', function($join) {
+            $join->on('properties.id', '=', 'reservations.property_id')
+                ->where('reservations.status', '=', 'confirmed')
+                ->where('reservations.check_out', '>=', now()->subMonths(6))
+                ->where('reservations.check_in', '<=', now());
+        })
+        ->groupBy('properties.id', 'properties.title')
+        ->get()
+        ->map(function ($property) {
+            return [
+                'name' => $property->title,
+                'rate' => round($property->rate, 2)
+            ];
+        });
+    }
+
 }

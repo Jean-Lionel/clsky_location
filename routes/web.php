@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\SettingController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -52,7 +54,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('notifications', App\Http\Controllers\NotificationController::class);
     Route::resource('maintenances', App\Http\Controllers\MaintenanceController::class);
     Route::resource('documents', App\Http\Controllers\DocumentController::class);
-    Route::resource('reports', ReportController::class);
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
+
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
 
@@ -80,6 +84,27 @@ Route::middleware(['auth'])->group(function () {
         ->name('properties.availability-suggestions');
 
 
+});
+
+Route::name('client.')->prefix('client')->group(function () {
+    // Route accessible sans authentification
+    Route::get('/properties', [App\Http\Controllers\Client\PropertyController::class, 'index'])->name('properties.index');
+    Route::get('/properties/{property}', [App\Http\Controllers\Client\PropertyController::class, 'show'])->name('properties.show');
+});
+
+Route::name('client.')->prefix('client')->middleware(['auth'])->group(function () {
+    // Routes pour les propriétés
+    Route::post('/properties/{property}/reserve', [App\Http\Controllers\Client\PropertyController::class, 'reserve'])->name('properties.reserve');
+
+    // Routes pour les réservations
+    Route::get('/reservations', [ReservationController::class, 'index'])->name('reservations.index');
+    Route::get('/reservations/{reservation}', [ReservationController::class, 'show'])->name('reservations.show');
+    Route::post('/reservations/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservations.cancel');
+
+    // Routes pour les paiements
+    Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::post('/payments/{reservation}/pay', [PaymentController::class, 'pay'])->name('payments.pay');
+    Route::get('/payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');
 });
 
 Auth::routes();
