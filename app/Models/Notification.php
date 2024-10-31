@@ -20,6 +20,9 @@ class Notification extends Model
         'title',
         'content',
         'type',
+        'data',
+        'notifiable_id',
+        'notifiable_type',
         'read_at',
     ];
 
@@ -38,4 +41,23 @@ class Notification extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function notifiable(): BelongsTo
+    {
+        return $this->morphTo();
+    }
+
+    // meake boot on create set user_id
+
+    public static function boot()
+    {
+        parent::boot();
+
+
+        self::creating(function ($model) {
+            $model->user_id = Auth::user()->id;
+        });
+    }
+
+
 }

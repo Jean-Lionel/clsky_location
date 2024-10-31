@@ -4,6 +4,21 @@
 
 @section('content')
 <div class="container py-5">
+    {{-- alert message d'information succes or error --}}
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+
     <div class="row">
         <!-- Galerie d'images -->
         <div class="col-lg-8 mb-4">
@@ -51,6 +66,13 @@
                                        id="check_out"
                                        required>
                             </div>
+                            {{-- alert input error validation --}}
+                            @error('check_in')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            @error('check_out')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="mb-3">
@@ -62,6 +84,10 @@
                                    value="1"
                                    required>
                         </div>
+                        <!-- alert input error validation --}} -->
+                            @error('guests')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
 
                         <div class="mb-3">
                             <label class="form-label">Notes (optionnel)</label>

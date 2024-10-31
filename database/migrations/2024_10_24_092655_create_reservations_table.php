@@ -24,6 +24,9 @@ return new class extends Migration
             $table->enum('status', ["pending","confirmed","cancelled","completed"])->default('pending');
             $table->enum('payment_status', ["pending","paid","refunded"])->default('pending');
             $table->text('notes')->nullable();
+            $table->decimal('total_paid', 10, 2)->default(0);
+            $table->string('motif_annulation')->nullable();
+            $table->timestamp('date_annulation')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

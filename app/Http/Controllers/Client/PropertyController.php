@@ -35,7 +35,7 @@ class PropertyController extends Controller
                 $q->where('bedrooms', '>=', $bedrooms);
             });
 
-        $properties = $query->latest()->paginate(12);
+        $properties = $query->latest()->get();
 
         return view('client.properties.index', compact('properties'));
     }
@@ -53,18 +53,31 @@ class PropertyController extends Controller
 
     public function reserve(Request $request, Property $property)
     {
+        try {
         $request->validate([
-            'check_in' => 'required|date|after:today',
+            'check_in' => 'required|date',
             'check_out' => 'required|date|after:check_in',
             'guests' => 'required|integer|min:1',
             'notes' => 'nullable|string'
+        ], [
+            'check_in.required' => 'The check-in date is required.',
+            'check_in.date' => 'The check-in date must be a valid date.',
+            'check_in.after' => 'The check-in date must be a date after today.',
+            'check_out.required' => 'The check-out date is required.',
+            'check_out.date' => 'The check-out date must be a valid date.',
+            'check_out.after' => 'The check-out date must be after the check-in date.',
+            'guests.required' => 'The number of guests is required.',
+            'guests.integer' => 'The number of guests must be an integer.',
+            'guests.min' => 'The number of guests must be at least 1.',
+            'notes.string' => 'The notes must be a string.',
         ]);
+
+
 
         // Vérifier la disponibilité pour ces dates
         if (!$this->isAvailable($property, $request->check_in, $request->check_out)) {
             return back()->with('error', 'Ces dates ne sont pas disponibles.');
         }
-
         // Calculer le prix total
         $numberOfDays = Carbon::parse($request->check_in)
             ->diffInDays(Carbon::parse($request->check_out));
@@ -83,10 +96,17 @@ class PropertyController extends Controller
         ]);
 
         // Notifier le propriétaire
-        $property->user->notify(new ServicesReservationRequestNotification($reservation));
+        // $property->user->notify(new ServicesReservationRequestNotification($reservation));
 
         return redirect()->route('client.reservations.show', $reservation)
             ->with('success', 'Votre demande de réservation a été envoyée.');
+            //code...
+        } catch (\Throwable $th) {
+            //throw $th;
+            return back()->with('error', $th->getMessage());
+            return back()->with('error', 'Une erreur s\'est produite lors de la création de la reservation.');
+        }
+
     }
 
     protected function getAvailableDates($property, $startDate, $endDate)

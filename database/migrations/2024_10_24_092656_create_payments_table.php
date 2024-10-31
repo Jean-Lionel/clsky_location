@@ -21,6 +21,7 @@ return new class extends Migration
             $table->enum('payment_method', ["card","bank_transfer","cash"]);
             $table->string('transaction_id')->nullable();
             $table->enum('status', ["pending","completed","failed","refunded"])->default('pending');
+            $table->json('metadata')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

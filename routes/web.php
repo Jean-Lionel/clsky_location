@@ -110,12 +110,15 @@ Route::name('client.')->prefix('client')->middleware(['auth'])->group(function (
 
     // Routes pour les paiements
     Route::get('/payments', [App\Http\Controllers\Client\PaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments/{reservation}/initiate', [App\Http\Controllers\Client\PaymentController::class, 'initiate'])->name('payments.initiate'); // Nouvelle route
     Route::post('/payments/{reservation}/pay', [App\Http\Controllers\Client\PaymentController::class, 'pay'])->name('payments.pay');
     Route::get('/payments/{payment}', [App\Http\Controllers\Client\PaymentController::class, 'show'])->name('payments.show');
 
     // logout the user
     Route::post('/logout', [App\Http\Controllers\Client\AuthController::class, 'logout'])->name('logout');
 });
+
+
 
 Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

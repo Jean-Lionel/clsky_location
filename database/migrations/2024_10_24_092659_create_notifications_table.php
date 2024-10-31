@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('title');
             $table->text('content');
             $table->string('type');
+            $table->timestamp('data')->nullable();
+            $table->foreignId('notifiable_id')->nullable()->constrained();
+            $table->string('notifiable_type')->nullable();
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });

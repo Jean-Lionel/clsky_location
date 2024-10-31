@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Models\Reservation;
+use Illuminate\Support\Facades\Auth;
 
 class ReservationRequestNotification extends Notification
 {
@@ -39,6 +40,7 @@ class ReservationRequestNotification extends Notification
     public function toDatabase($notifiable): array
     {
         return [
+            'user_id' => Auth::user()->id,
             'reservation_id' => $this->reservation->id,
             'message' => 'Nouvelle demande de réservation pour ' . $this->reservation->property->title,
             'amount' => $this->reservation->total_price

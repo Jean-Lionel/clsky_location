@@ -15,15 +15,15 @@ class Payment extends Model
         'amount',
         'payment_method',
         'transaction_id',
-        'status'
+        'status',
+        'metadata'
     ];
-
     protected $casts = [
         'amount' => 'decimal:2',
         'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'updated_at' => 'datetime',
+        'metadata' => 'array'
     ];
-
     // Relations
     public function reservation()
     {
@@ -66,4 +66,21 @@ class Payment extends Model
     {
         return $query->where('status', 'completed');
     }
+    public const STATUTS = [
+        'pending' => 'En attente',
+        'completed' => 'Complété',
+        'failed' => 'Échoué',
+        'refunded' => 'Remboursé'
+    ];
+
+
+
+    /**
+     * Vérifier si le paiement est un remboursement.
+     */
+    public function isRefund(): bool
+    {
+        return $this->type === 'refund';
+    }
+
 }
