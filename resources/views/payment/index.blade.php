@@ -19,9 +19,9 @@
             <form action="{{ route('payments.index') }}" method="GET" class="row g-3">
                 <div class="col-md-3">
                     <label class="form-label">Rechercher</label>
-                    <input type="text" 
-                           class="form-control" 
-                           name="search" 
+                    <input type="text"
+                           class="form-control"
+                           name="search"
                            placeholder="ID transaction, Client..."
                            value="{{ request('search') }}">
                 </div>
@@ -46,15 +46,15 @@
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">Date début</label>
-                    <input type="date" 
-                           class="form-control" 
+                    <input type="date"
+                           class="form-control"
                            name="start_date"
                            value="{{ request('start_date') }}">
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">Date fin</label>
-                    <input type="date" 
-                           class="form-control" 
+                    <input type="date"
+                           class="form-control"
                            name="end_date"
                            value="{{ request('end_date') }}">
                 </div>
@@ -154,7 +154,7 @@
                                 <td>{{ $payment->id }}</td>
                                 <td>{{ $payment->created_at->format('d/m/Y H:i') }}</td>
                                 <td>
-                                    <a href="{{ route('reservations.show', $payment->reservation) }}">
+                                    <a href="{{ route('reservations.show', $payment->reservation_id) }}">
                                         #{{ $payment->reservation_id }}
                                     </a>
                                 </td>
@@ -191,11 +191,11 @@
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('payments.show', $payment) }}" 
+                                        <a href="{{ route('payments.show', $payment) }}"
                                            class="btn btn-outline-primary">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <button type="button" 
+                                        <button type="button"
                                                 class="btn btn-outline-danger"
                                                 onclick="confirmDelete({{ $payment->id }})">
                                             <i class="bi bi-trash"></i>
