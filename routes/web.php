@@ -44,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('payments', App\Http\Controllers\PaymentController::class);
     Route::resource('reviews', App\Http\Controllers\ReviewController::class);
     Route::resource('messages', App\Http\Controllers\MessageController::class);
+    Route::resource('depenses', App\Http\Controllers\DepenseController::class);
     // Routes d'archivage
     Route::get('archived', [App\Http\Controllers\MessageController::class, 'archived'])->name('archived');
     Route::post('messages/{message}/archive', [App\Http\Controllers\MessageController::class, 'archive'])->name('messages.archive');
@@ -122,3 +123,5 @@ Route::name('client.')->prefix('client')->middleware(['auth'])->group(function (
 
 Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+

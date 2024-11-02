@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'CL SKY APARTMENT - Administration')</title>
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
-  
-    
+
+
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -358,7 +358,7 @@
     <nav class="navbar navbar-expand-lg fixed-top top-navbar">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ route('dashboard') }}">CL SKY APARTMENT</a>
-            
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
                 <i class="bi bi-list"></i>
             </button>
@@ -366,28 +366,28 @@
             <div class="collapse navbar-collapse" id="navbarContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" 
+                        <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
                            href="{{ route('dashboard') }}">
                             <i class="bi bi-speedometer2"></i>
                             Tableau de bord
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('properties.*') ? 'active' : '' }}" 
+                        <a class="nav-link {{ request()->routeIs('properties.*') ? 'active' : '' }}"
                            href="{{ route('properties.index') }}">
                             <i class="bi bi-building"></i>
                             Appartements
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" 
+                        <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}"
                            href="{{ route('users.index') }}">
                             <i class="bi bi-people-fill"></i>
                             Utilisateurs
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('reservations.*') ? 'active' : '' }}" 
+                        <a class="nav-link {{ request()->routeIs('reservations.*') ? 'active' : '' }}"
                            href="{{ route('reservations.index') }}">
                             <i class="bi bi-calendar2-check"></i>
                             Réservations
@@ -400,28 +400,35 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item {{ request()->routeIs('messages.*') ? 'active' : '' }}" 
+                                <a class="dropdown-item {{ request()->routeIs('messages.*') ? 'active' : '' }}"
                                    href="{{ route('messages.index') }}">
                                     <i class="bi bi-chat-dots"></i>
                                     Messages
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item {{ request()->routeIs('payments.*') ? 'active' : '' }}" 
+                                <a class="dropdown-item {{ request()->routeIs('payments.*') ? 'active' : '' }}"
                                    href="{{ route('payments.index') }}">
                                     <i class="bi bi-credit-card"></i>
                                     Paiements
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item {{ request()->routeIs('reports.*') ? 'active' : '' }}" 
+                                <a class="dropdown-item {{ request()->routeIs('depenses.*') ? 'active' : '' }}"
+                                   href="{{ route('depenses.index') }}">
+                                    <i class="bi bi-file-earmark-text"></i>
+                                    Depenses
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item {{ request()->routeIs('reports.*') ? 'active' : '' }}"
                                    href="{{ route('reports.index') }}">
                                     <i class="bi bi-file-earmark-text"></i>
                                     Rapports
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item {{ request()->routeIs('settings.index') ? 'active' : '' }}" 
+                                <a class="dropdown-item {{ request()->routeIs('settings.index') ? 'active' : '' }}"
                                    href="{{ route('settings.index') }}">
                                     <i class="bi bi-gear"></i>
                                     Paramètres
@@ -438,15 +445,15 @@
                             <span class="badge bg-danger notification-badge">5</span>
                         </a>
                     </div>
-                    
+
                     <div class="dropdown">
-                        <a class="nav-link dropdown-toggle user-profile d-flex align-items-center" 
+                        <a class="nav-link dropdown-toggle user-profile d-flex align-items-center"
                            href="#" role="button" data-bs-toggle="dropdown">
                             @if(auth()->user()->avatar)
-                                <img src="{{ asset('storage/'.auth()->user()->avatar) }}" 
+                                <img src="{{ asset('storage/'.auth()->user()->avatar) }}"
                                      class="rounded-circle me-2" width="32" height="32" alt="Profile">
                             @else
-                                <div class="rounded-circle bg-white text-primary d-flex align-items-center justify-content-center me-2" 
+                                <div class="rounded-circle bg-white text-primary d-flex align-items-center justify-content-center me-2"
                                      style="width: 32px; height: 32px;">
                                     {{ substr(auth()->user()->name, 0, 1) }}
                                 </div>
