@@ -80,7 +80,7 @@
                 </div>
                 <div class="card-body">
                     <!-- Correction ici : Utilisation de POST et ajout du token CSRF -->
-                    <form method="POST" action="{{ route('client.payments.pay', $reservation) }}">
+                    <form method="POST"  action="{{ route('client.payments.pay', $reservation) }}"  enctype="multipart/form-data">
                         @method('post')
                         @csrf
 

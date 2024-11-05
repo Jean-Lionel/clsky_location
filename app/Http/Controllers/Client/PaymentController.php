@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PaymentController extends Controller
 {
@@ -68,10 +69,16 @@ class PaymentController extends Controller
             'sender_name' => 'required|string|max:255',
             'sender_phone' => 'required|string|max:20',
             'transfer_date' => 'required|date',
-            'notes' => 'nullable|string|max:1000'
+            'notes' => 'nullable|string|max:1000',
+            'proof_document' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120' // 5MB max
         ]);
 
         try {
+            // Gérer le fichier uploadé
+            if ($request->hasFile('proof_document')) {
+                $path = $request->file('proof_document')->store('payment_proofs', 'public');
+            }
+
             // Créer le paiement
             $payment = Payment::create([
                 'reservation_id' => $reservation->id,
@@ -79,30 +86,60 @@ class PaymentController extends Controller
                 'amount' => $reservation->total_price,
                 'payment_method' => $validated['payment_method'],
                 'transaction_id' => $validated['transaction_id'],
-                'status' => 'pending', // Le paiement doit être vérifié manuellement
+                'status' => 'pending',
+                'proof_document_path' => $path ?? null,
                 'metadata' => [
                     'sender_name' => $validated['sender_name'],
                     'sender_phone' => $validated['sender_phone'],
                     'transfer_date' => $validated['transfer_date'],
-                    'notes' => $validated['notes']
+                    'notes' => $validated['notes'],
+                    'original_filename' => $request->file('proof_document')->getClientOriginalName()
                 ]
             ]);
 
             // Mettre à jour le statut de la réservation
             $reservation->update(['status' => 'pending']);
 
-            // Notifier l'administrateur (à implémenter selon vos besoins)
-            // Notification::send($admins, new NewPaymentNotification($payment));
+            // Envoyer une notification à l'administrateur
+            try {
+                // Notification::send($admins, new NewPaymentNotification($payment));
+            } catch (\Exception $e) {
+                // Logger l'erreur de notification mais continuer le processus
+                \Log::error("Erreur d'envoi de notification : " . $e->getMessage());
+            }
 
             return redirect()
                 ->route('client.reservations.show', $reservation)
                 ->with('success', 'Votre paiement a été enregistré et est en cours de vérification. Nous vous notifierons une fois la confirmation effectuée.');
 
         } catch (\Exception $e) {
-            dd($e);
-            // return back()
-            //     ->with('error', 'Une erreur est survenue lors de l\'enregistrement du paiement. Veuillez réessayer.')
-            //     ->withInput();
+            // En cas d'erreur, supprimer le fichier s'il a été uploadé
+            if (isset($path) && Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
+
+            \Log::error("Erreur de paiement : " . $e->getMessage());
+
+            return back()
+                ->with('error', 'Une erreur est survenue lors de l\'enregistrement du paiement. Veuillez réessayer.')
+                ->withInput();
         }
+    }
+
+    public function downloadProof(Payment $payment)
+    {
+        // Vérifier les permissions
+        if ($payment->user_id !== Auth::id() && !Auth::user()->isAdmin()) {
+            abort(403);
+        }
+
+        if (!$payment->proof_document_path || !Storage::disk('public')->exists($payment->proof_document_path)) {
+            abort(404);
+        }
+
+        return Storage::disk('public')->download(
+            $payment->proof_document_path,
+            $payment->metadata['original_filename'] ?? 'justificatif.pdf'
+        );
     }
 }

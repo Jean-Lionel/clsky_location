@@ -11,11 +11,12 @@ class Payment extends Model
 
     protected $fillable = [
         'reservation_id',
-        'user_id',           // Ajouté
+        'user_id',
         'amount',
         'payment_method',
         'transaction_id',
         'status',
+        'proof_document_path',
         'metadata'
     ];
     protected $casts = [
