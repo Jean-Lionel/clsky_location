@@ -4,6 +4,20 @@
 
 @section('content')
 <div class="container-fluid">
+    {{-- alert message error and success en utlisant session --}}
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3">Nouveau Paiement</h1>
         <a href="{{ route('payments.index') }}" class="btn btn-outline-secondary">
@@ -21,16 +35,16 @@
                         <!-- Réservation -->
                         <div class="mb-3">
                             <label for="reservation_id" class="form-label">Réservation</label>
-                            <select class="form-select @error('reservation_id') is-invalid @enderror" 
-                                    id="reservation_id" 
-                                    name="reservation_id" 
+                            <select class="form-select @error('reservation_id') is-invalid @enderror"
+                                    id="reservation_id"
+                                    name="reservation_id"
                                     required>
                                 <option value="">Sélectionner une réservation</option>
                                 @foreach($reservations ?? [] as $reservation)
-                                    <option value="{{ $reservation->id }}" 
+                                    <option value="{{ $reservation->id }}"
                                             data-amount="{{ $reservation->total_price }}"
                                             {{ old('reservation_id') == $reservation->id ? 'selected' : '' }}>
-                                        #{{ $reservation->id }} - {{ $reservation->property->title }} 
+                                        #{{ $reservation->id }} - {{ $reservation->property->title }}
                                         ({{ number_format($reservation->total_price, 2) }} €)
                                     </option>
                                 @endforeach
@@ -44,12 +58,12 @@
                         <div class="mb-3">
                             <label for="amount" class="form-label">Montant</label>
                             <div class="input-group">
-                                <input type="number" 
-                                       step="0.01" 
-                                       class="form-control @error('amount') is-invalid @enderror" 
-                                       id="amount" 
-                                       name="amount" 
-                                       value="{{ old('amount') }}" 
+                                <input type="number"
+                                       step="0.01"
+                                       class="form-control @error('amount') is-invalid @enderror"
+                                       id="amount"
+                                       name="amount"
+                                       value="{{ old('amount') }}"
                                        required>
                                 <span class="input-group-text">€</span>
                                 @error('amount')
@@ -61,9 +75,9 @@
                         <!-- Méthode de paiement -->
                         <div class="mb-3">
                             <label for="payment_method" class="form-label">Méthode de paiement</label>
-                            <select class="form-select @error('payment_method') is-invalid @enderror" 
-                                    id="payment_method" 
-                                    name="payment_method" 
+                            <select class="form-select @error('payment_method') is-invalid @enderror"
+                                    id="payment_method"
+                                    name="payment_method"
                                     required>
                                 <option value="">Sélectionner une méthode</option>
                                 <option value="card" {{ old('payment_method') == 'card' ? 'selected' : '' }}>
@@ -84,10 +98,10 @@
                         <!-- Référence de transaction -->
                         <div class="mb-3">
                             <label for="transaction_id" class="form-label">Référence de transaction</label>
-                            <input type="text" 
-                                   class="form-control @error('transaction_id') is-invalid @enderror" 
-                                   id="transaction_id" 
-                                   name="transaction_id" 
+                            <input type="text"
+                                   class="form-control @error('transaction_id') is-invalid @enderror"
+                                   id="transaction_id"
+                                   name="transaction_id"
                                    value="{{ old('transaction_id') }}">
                             @error('transaction_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -100,9 +114,9 @@
                         <!-- Statut -->
                         <div class="mb-4">
                             <label for="status" class="form-label">Statut</label>
-                            <select class="form-select @error('status') is-invalid @enderror" 
-                                    id="status" 
-                                    name="status" 
+                            <select class="form-select @error('status') is-invalid @enderror"
+                                    id="status"
+                                    name="status"
                                     required>
                                 <option value="pending" {{ old('status') == 'pending' ? 'selected' : '' }}>
                                     En attente

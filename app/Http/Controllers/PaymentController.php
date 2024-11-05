@@ -62,6 +62,7 @@ class PaymentController extends Controller
 
     public function store(PaymentStoreRequest $request)
     {
+
         try {
             $payment = Payment::create([
                 'reservation_id' => $request->reservation_id,
@@ -69,7 +70,11 @@ class PaymentController extends Controller
                 'payment_method' => $request->payment_method,
                 'transaction_id' => $request->transaction_id,
                 'status' => $request->status,
-                'user_id' => auth()->id()
+                'user_id' => auth()->id(),
+                'metadata' => [
+                    'sender_name' => auth()->user()->name,
+                    'sender_phone' => auth()->user()->phone,
+                ]
             ]);
 
             // Mettre à jour le statut de paiement de la réservation si le paiement est complété
@@ -84,7 +89,7 @@ class PaymentController extends Controller
 
         } catch (\Exception $e) {
             // dump($e);
-            return back()->with('error', 'Une erreur est survenue lors de la création du paiement.')
+            return back()->with('error', $e->getMessage())
                 ->withInput();
         }
     }
