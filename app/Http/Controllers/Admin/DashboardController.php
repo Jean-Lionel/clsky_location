@@ -40,10 +40,17 @@ class DashboardController extends Controller
         // Données pour le graphique
         $chartData = $this->getChartData($startDate);
 
+        $tousTotalRevenue = Property::all()->flatMap(function ($property) {
+            return $property->reservations->flatMap(function ($reservation) {
+                return $reservation->payments;
+            });
+        })->sum('amount');
+
         return view('admin.dashboard', array_merge($stats, [
             'properties' => $properties,
             'chartData' => $chartData,
-            'selectedPeriod' => $period
+            'selectedPeriod' => $period,
+            'tousTotalRevenue' => $tousTotalRevenue,
         ]));
     }
 

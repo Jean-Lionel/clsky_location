@@ -48,9 +48,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted mb-2">Revenus Totaux</h6>
-                            <h3 class="mb-0">{{ number_format($properties->sum(function($p) {
-                                return $p->reservations->sum('total_paid');
-                            }), 2) }} €</h3>
+                            <h3 class="mb-0">{{ $tousTotalRevenue }} €</h3>
                         </div>
                         <div class="text-success bg-success bg-opacity-10 p-3 rounded-circle">
                             <i class="bi bi-currency-euro fs-1"></i>
@@ -151,10 +149,12 @@
                     <tbody>
                         @foreach($properties as $property)
                         @php
-                            $totalRevenue = $property->reservations->sum('total_paid');
+                            $totalRevenue = $property->reservations->flatMap(function ($reservation) {
+                                                return $reservation->payments;
+                                            })->sum('amount');
                             $latestPayments = $property->reservations->flatMap->payments
                                 ->sortByDesc('created_at')
-                                ->take(3);
+                                ->take(5);
                         @endphp
                         <tr>
                             <td style="min-width: 250px;">
