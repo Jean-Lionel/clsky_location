@@ -82,6 +82,9 @@ Route::middleware(['auth'])->group(function () {
         [PropertyController::class, 'getAvailabilitySuggestions'])
         ->name('properties.availability-suggestions');
 
+        Route::get('/payments/{payment}/download-proof', [App\Http\Controllers\Client\PaymentController::class, 'downloadProof'])
+        ->name('payments.download-proof');
+
 
 });
 
@@ -114,6 +117,8 @@ Route::name('client.')->prefix('client')->middleware(['auth'])->group(function (
     Route::get('/payments/{reservation}/initiate', [App\Http\Controllers\Client\PaymentController::class, 'initiate'])->name('payments.initiate'); // Nouvelle route
     Route::post('/payments/{reservation}/pay', [App\Http\Controllers\Client\PaymentController::class, 'pay'])->name('payments.pay');
     Route::get('/payments/{payment}', [App\Http\Controllers\Client\PaymentController::class, 'show'])->name('payments.show');
+    Route::get('/payments/{payment}/download-proof', [App\Http\Controllers\Client\PaymentController::class, 'downloadProof'])
+     ->name('payments.download-proof');
 
     // logout the user
     Route::post('/logout', [App\Http\Controllers\Client\AuthController::class, 'logout'])->name('logout');
