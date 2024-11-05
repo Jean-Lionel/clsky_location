@@ -233,9 +233,9 @@
                                             data-bs-target="#paymentModal{{ $property->id }}">
                                         <i class="bi bi-eye"></i>
                                     </button>
-                                    <a href="#" class="btn btn-sm btn-outline-info">
+                                    {{-- <a href="#" class="btn btn-sm btn-outline-info">
                                         <i class="bi bi-graph-up"></i>
-                                    </a>
+                                    </a> --}}
                                 </div>
                             </td>
                         </tr>
