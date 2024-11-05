@@ -163,6 +163,21 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+                                                <!-- Dans le formulaire, avant le bouton de soumission -->
+                        <div class="mb-4">
+                            <label class="form-label required">Justificatif de paiement</label>
+                            <input type="file"
+                                name="proof_document"
+                                class="form-control @error('proof_document') is-invalid @enderror"
+                                accept="image/*,.pdf"
+                                required>
+                            <div class="form-text">
+                                Formats acceptés : PDF, JPG, PNG (Max: 5MB)
+                            </div>
+                            @error('proof_document')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
 
                         <button type="submit" class="btn btn-primary w-100 btn-lg">
                             Confirmer le paiement
