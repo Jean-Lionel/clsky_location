@@ -82,8 +82,9 @@ Route::middleware(['auth'])->group(function () {
         [PropertyController::class, 'getAvailabilitySuggestions'])
         ->name('properties.availability-suggestions');
 
-        Route::get('/payments/{payment}/download-proof', [App\Http\Controllers\Client\PaymentController::class, 'downloadProof'])
+    Route::get('/payments/{payment}/download-proof', [App\Http\Controllers\Client\PaymentController::class, 'downloadProof'])
         ->name('payments.download-proof');
+    Route::get('/admin/dashboard/export', [DashboardController::class, 'export'])->name('admin.dashboard.export');
 
 
 });
