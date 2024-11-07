@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Property;
-use Illuminate\Http\Client\Request as ClientRequest;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
