@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>CL SKY COMPANY </title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link rel="shortcut icon" href="img/icon-deal.png" type="image/x-icon">
+    <link rel="shortcut icon" href="{{asset('img/icon-deal.png')}}" type="image/x-icon">
     <meta content="" name="keywords">
     <meta content="" name="description">
     <!-- Favicon -->
